@@ -54,14 +54,16 @@
     body{font-family:Inter,system-ui,sans-serif;background:var(--graphite);color:#fff;max-width:100vw;overflow-x:hidden}
 
     #siteShell{position:relative;min-height:100vh;max-width:100vw;overflow-x:hidden}
-    #wireMount{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:1}
+    #wireMount{display:none!important}
+    .site-container{width:100%;max-width:80rem;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem;box-sizing:border-box}
+    @media(min-width:640px){.site-container{padding-left:1.5rem;padding-right:1.5rem}}
     #wireSvg{width:100%;height:100%;display:block}
     .wire-base{fill:none;stroke:#2a2d35;stroke-width:5;stroke-linecap:round}
     .wire-glow{fill:none;stroke:var(--current-color);stroke-width:2.5;stroke-linecap:round;opacity:calc(.35 + var(--glow-intensity)*.55);filter:drop-shadow(0 0 calc(6px + 14px*var(--glow-intensity)) var(--current-color))}
     .current-dot{fill:var(--current-color);filter:drop-shadow(0 0 calc(10px + 12px*var(--glow-intensity)) var(--current-color))}
 
     .content-layer{position:relative;z-index:2}
-    .glass{background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--border);backdrop-filter:blur(calc(var(--blur-size) * 1px));box-shadow:0 0 calc(35px*var(--glow-intensity)) color-mix(in srgb,var(--main-neon) 30%,transparent)}
+    .glass{background:color-mix(in srgb,var(--surface) 88%,transparent);border:none;backdrop-filter:blur(calc(var(--blur-size) * 1px));box-shadow:none}
     .section-reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
     .section-reveal.visible{opacity:1;transform:none}
     .nav-link{color:rgba(255,255,255,.5);text-decoration:none;font-size:.875rem}
@@ -70,8 +72,8 @@
       position:fixed;top:1rem;left:50%;transform:translateX(-50%);
       z-index:100;width:92%;max-width:72rem;
       background:rgba(10,10,15,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-      border:1px solid rgba(255,255,255,.1);border-radius:1rem;
-      padding:.75rem 1.5rem;box-shadow:0 10px 30px rgba(0,0,0,.5);
+      border:none;border-radius:1rem;
+      padding:.75rem 1.5rem;box-shadow:0 8px 32px rgba(0,0,0,.45);
     }
     .site-navbar__inner{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;min-width:0}
     .site-navbar__actions{display:flex;align-items:center;gap:.45rem;flex-shrink:0}
@@ -122,12 +124,11 @@
       width:100%;max-width:100%;padding:8px 14px;border-radius:999px;
       font-size:.72rem;font-weight:600;letter-spacing:.02em;color:rgba(255,255,255,.92);
       background:rgba(18,18,18,.85);backdrop-filter:blur(8px);
-      border:1px solid rgba(255,215,0,.2);cursor:pointer;
-      box-shadow:0 0 calc(14px*var(--glow-intensity)) rgba(255,215,0,.08);
-      transition:transform .2s,box-shadow .2s,border-color .2s;
+      border:none;cursor:pointer;
+      transition:transform .2s,background .2s;
       overflow-wrap:break-word;word-break:break-word;white-space:normal;
     }
-    .hero-status-badge:hover{transform:translateY(-1px);border-color:rgba(255,215,0,.35);box-shadow:0 0 calc(20px*var(--glow-intensity)) rgba(255,215,0,.12)}
+    .hero-status-badge:hover{transform:translateY(-1px);background:rgba(24,24,28,.9)}
     .hero-pulse-dot{
       width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;
       animation:heroPulse 2s ease-in-out infinite;
@@ -150,13 +151,12 @@
       padding:8px 14px;border-radius:999px;width:100%;max-width:100%;
       color:rgba(255,255,255,.88);
       background:rgba(18,18,18,.85);backdrop-filter:blur(8px);
-      border:1px solid rgba(255,215,0,.2);
-      box-shadow:0 0 12px rgba(255,215,0,.06);
+      border:none;
       overflow-wrap:break-word;word-break:break-word;white-space:normal;
     }
     .hero-trust{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.1rem;padding-bottom:.25rem;width:100%;max-width:100%}
     .hero-trust-item{
-      background:rgba(255,255,255,.03);border:1px solid rgba(255,215,0,.15);
+      background:rgba(255,255,255,.03);border:none;
       border-radius:10px;padding:10px 16px;min-width:0;flex:1 1 8rem;max-width:100%;
       overflow-wrap:break-word;word-break:break-word;
     }
@@ -202,7 +202,7 @@
     .quiz-result{font-size:.85rem;line-height:1.6;color:rgba(255,255,255,.65);margin-bottom:1rem;padding:.75rem;border-radius:.65rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,215,0,.12)}
     .about-stack-wrap{
       margin-top:1.25rem;padding:1rem 0;border-radius:.85rem;
-      border:1px solid rgba(255,215,0,.12);background:rgba(255,255,255,.02);overflow:hidden;
+      border:none;background:rgba(255,255,255,.02);overflow:hidden;
     }
     .about-stack-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.35);margin-bottom:.85rem;padding:0 1rem}
     .marquee-zone{
@@ -232,15 +232,14 @@
     }
     .about-grid{display:flex;flex-direction:column;gap:2.5rem;align-items:stretch}
     .about-col{width:100%;max-width:300px;margin:0 auto}
-    .about-frame{width:100%;border:2px solid var(--main-neon);border-radius:1rem;overflow:hidden;box-shadow:0 0 22px color-mix(in srgb,var(--main-neon) 35%,transparent)}
+    .about-frame{width:100%;border:none;border-radius:1rem;overflow:hidden;box-shadow:none}
     .about-frame img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:var(--surface)}
     .about-metrics{display:flex;flex-direction:column;gap:.55rem;margin-top:.85rem}
     .about-metric{
       padding:.65rem .9rem;border-radius:.75rem;text-align:center;font-size:.78rem;font-weight:600;
       color:rgba(255,255,255,.78);letter-spacing:.02em;width:100%;max-width:100%;
-      border:1px solid color-mix(in srgb,var(--current-color) 40%,transparent);
+      border:none;
       background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,255,255,.03));
-      box-shadow:0 0 calc(12px*var(--glow-intensity)) color-mix(in srgb,var(--current-color) 18%,transparent);
       overflow-wrap:break-word;word-break:break-word;
     }
     .about-text{flex:1;min-width:0;width:100%;max-width:100%}
@@ -536,16 +535,15 @@
     .project-story{font-size:.95rem;line-height:1.8;color:rgba(255,255,255,.55);overflow-wrap:break-word;word-break:break-word}
 
     /* Project presentation cards */
-    .project-cards-grid{display:grid;grid-template-columns:1fr;gap:1.75rem;width:100%;max-width:100%}
-    @media(min-width:1024px){.project-cards-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem}}
+    .project-cards-grid{display:grid;grid-template-columns:1fr;gap:1.75rem;width:100%;max-width:42rem;margin:0 auto}
     .project-card{
       display:flex;flex-direction:column;border-radius:1.25rem;overflow:hidden;
-      border:1px solid var(--border);background:linear-gradient(165deg,rgba(18,19,24,.96),rgba(10,10,15,.92));
-      box-shadow:0 12px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);
+      border:none;background:linear-gradient(165deg,rgba(18,19,24,.96),rgba(10,10,15,.92));
+      box-shadow:0 12px 40px rgba(0,0,0,.35);
       width:100%;max-width:100%;min-width:0;box-sizing:border-box;
-      transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+      transition:transform .25s ease,box-shadow .25s ease;
     }
-    .project-card:hover{transform:translateY(-3px);border-color:rgba(255,215,0,.22);box-shadow:0 16px 48px rgba(0,0,0,.4),0 0 24px rgba(255,215,0,.06)}
+    .project-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.45)}
     .project-card__hero{
       position:relative;display:flex;align-items:center;justify-content:space-between;
       padding:1.35rem 1.25rem;min-height:5.5rem;overflow:hidden;
@@ -613,14 +611,23 @@
       border:1px solid rgba(255,255,255,.08);cursor:default;
     }
     .project-card__btn--details{
-      color:#fff;border:1px solid color-mix(in srgb,var(--main-neon) 45%,transparent);
-      background:color-mix(in srgb,var(--purple) 12%,transparent);
-      box-shadow:0 0 calc(16px*var(--glow-intensity)) color-mix(in srgb,var(--main-neon) 20%,transparent);
+      color:#fff;border:none;
+      background:rgba(255,255,255,.06);
     }
-    .project-card__btn--details:hover{
+    .project-card__btn--details:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
+    .project-card__btn--open{
+      display:inline-flex;align-items:center;justify-content:center;gap:.35rem;
+      color:#fff;text-decoration:none;
+      background:linear-gradient(135deg,rgba(220,38,38,.25),rgba(128,0,32,.2));
+      border:1px solid rgba(220,38,38,.45);
+      box-shadow:0 8px 24px rgba(220,38,38,.15);
+    }
+    .project-card__btn--open:hover{
       transform:translateY(-1px);
-      box-shadow:0 0 calc(22px*var(--glow-intensity)) color-mix(in srgb,var(--main-neon) 35%,transparent);
+      background:linear-gradient(135deg,rgba(220,38,38,.35),rgba(128,0,32,.28));
+      box-shadow:0 12px 32px rgba(220,38,38,.22);
     }
+    .project-card__status--live{color:#fecaca;background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.35)}
 
     /* Project detail modal */
     .project-modal{position:fixed;inset:0;z-index:210;display:none;align-items:center;justify-content:center;padding:1rem}
@@ -629,8 +636,8 @@
     .project-modal-card{
       position:relative;z-index:1;width:100%;max-width:32rem;max-height:min(85vh,640px);
       overflow-y:auto;padding:1.5rem 1.25rem;border-radius:1rem;
-      background:rgba(18,19,24,.98);border:1px solid rgba(255,215,0,.2);
-      box-shadow:0 0 40px rgba(255,215,0,.1);box-sizing:border-box;
+      background:rgba(18,19,24,.98);border:none;
+      box-shadow:0 16px 48px rgba(0,0,0,.5);box-sizing:border-box;
     }
     .project-modal-card h3{font-size:1.1rem;font-weight:800;margin-bottom:.75rem;color:var(--main-neon);overflow-wrap:break-word;word-break:break-word}
     .project-modal-card p{font-size:.85rem;line-height:1.7;color:rgba(255,255,255,.65);margin-bottom:.75rem;overflow-wrap:break-word;word-break:break-word}
@@ -917,7 +924,9 @@
       border-top:1px solid rgba(255,255,255,.06);border-bottom:none;
       padding:3.5rem 1rem 0;margin-top:0;
     }
-    .footer-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2rem 1.5rem;max-width:80rem;margin:0 auto}
+    .footer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem 1.5rem;max-width:80rem;margin:0 auto}
+    @media(min-width:1024px){.footer-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(min-width:1280px){.footer-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
     .footer-col-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.32);margin-bottom:.85rem}
     .footer-brand-name{font-weight:800;font-size:1rem;margin-bottom:.5rem;color:var(--main-neon)}
     .footer-brand-desc{font-size:.82rem;line-height:1.6;color:rgba(255,255,255,.42)}
@@ -932,23 +941,32 @@
       font-size:.82rem;line-height:1.45;color:rgba(255,255,255,.38);margin-bottom:.5rem;transition:color .2s;
     }
     .footer-doc-btn:hover{color:var(--main-neon)}
-    .footer-contact-stack{display:flex;flex-direction:column;gap:.5rem;position:relative;z-index:10}
+    .footer-contact-stack,.footer-social-stack{display:flex;flex-direction:column;gap:.5rem;position:relative;z-index:10}
+    .footer-social-link{
+      display:flex;align-items:center;justify-content:space-between;gap:.5rem;
+      padding:.55rem .75rem;border-radius:.65rem;text-decoration:none;font-size:.82rem;font-weight:600;
+      color:rgba(255,255,255,.78);background:rgba(255,255,255,.04);
+      border:none;transition:background .2s ease,color .2s ease;
+    }
+    .footer-social-link span{display:inline-flex;align-items:center;gap:.45rem}
+    .footer-social-link:hover{background:rgba(255,255,255,.08);color:#fff}
+    .footer-social-link i{width:1.1rem;text-align:center}
     .footer-contact-btn{
       position:relative;z-index:10;cursor:pointer;
       display:flex;align-items:center;justify-content:space-between;width:100%;
       padding:.65rem 1rem;border-radius:.75rem;font-size:.82rem;font-weight:600;text-decoration:none;
-      border:1px solid color-mix(in srgb,var(--main-neon) 35%,transparent);
-      background:rgba(255,255,255,.03);color:rgba(255,255,255,.85);transition:border-color .2s,box-shadow .2s;
+      border:none;
+      background:rgba(255,255,255,.03);color:rgba(255,255,255,.85);transition:background .2s,color .2s;
     }
-    .footer-contact-btn:hover{border-color:color-mix(in srgb,var(--main-neon) 55%,transparent);box-shadow:0 0 16px rgba(255,215,0,.12)}
+    .footer-contact-btn:hover{background:rgba(255,255,255,.08);color:#fff}
     .footer-email-btn{
       position:relative;z-index:10;cursor:pointer;
       display:flex;align-items:center;justify-content:center;gap:.45rem;width:100%;
       padding:.65rem 1rem;border-radius:.75rem;font-size:.82rem;font-weight:600;
-      border:1px dashed rgba(255,255,255,.14);background:transparent;color:rgba(255,255,255,.55);transition:all .2s;
+      border:none;background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);transition:background .2s,color .2s;
     }
-    .footer-email-btn:hover{border-color:rgba(255,215,0,.35);color:var(--main-neon)}
-    .footer-email-btn.copied{border-color:var(--main-neon);color:var(--main-neon)}
+    .footer-email-btn:hover{background:rgba(255,255,255,.08);color:var(--main-neon)}
+    .footer-email-btn.copied{color:var(--main-neon);background:rgba(255,215,0,.08)}
     .footer-email-toast{
       position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%) translateY(10px);
       padding:.55rem 1rem;border-radius:999px;font-size:.78rem;font-weight:700;z-index:120;
@@ -1073,14 +1091,13 @@
     .calc-project-card{
       position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;
       padding:.7rem .75rem;padding-top:1.6rem;border-radius:12px;cursor:pointer;text-align:left;
-      border:1px solid var(--border);background:rgba(0,0,0,.22);color:rgba(255,255,255,.55);
-      transition:border-color .3s ease,box-shadow .3s ease,background .3s ease,color .25s ease,transform .2s ease;
+      border:none;background:rgba(0,0,0,.22);color:rgba(255,255,255,.55);
+      transition:background .3s ease,color .25s ease,transform .2s ease;
       width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow-wrap:break-word;word-break:break-word;
     }
-    .calc-project-card:hover{border-color:color-mix(in srgb,var(--main-neon) 35%,transparent);color:#fff;transform:translateY(-2px)}
+    .calc-project-card:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateY(-2px)}
     .calc-project-card.on{
-      border-color:#FFD700;background:rgba(255,215,0,.09);color:#fff;
-      box-shadow:0 0 28px rgba(255,215,0,.38),0 0 12px rgba(255,215,0,.22),inset 0 0 20px rgba(255,215,0,.04);
+      background:rgba(255,215,0,.09);color:#fff;
     }
     .calc-project-card__check{
       position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;
@@ -1130,12 +1147,12 @@
     .proof-card{
       display:flex;flex-direction:column;gap:.65rem;padding:1rem 1rem .9rem;border-radius:16px;
       background:linear-gradient(145deg,rgba(18,19,24,.95),rgba(10,10,15,.88));
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow:0 8px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);
-      transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+      border:none;
+      box-shadow:0 8px 28px rgba(0,0,0,.35);
+      transition:transform .25s ease,box-shadow .25s ease;
       width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow-wrap:break-word;word-break:break-word;
     }
-    .proof-card:hover{transform:translateY(-3px);border-color:rgba(255,215,0,.22);box-shadow:0 12px 36px rgba(0,0,0,.4),0 0 20px rgba(255,215,0,.08)}
+    .proof-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.4)}
     .proof-card-head{display:flex;align-items:center;gap:.65rem}
     .proof-avatar{
       width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
@@ -1293,8 +1310,6 @@
 <body>
 
 <div id="siteShell">
-  <div id="wireMount" aria-hidden="true"><svg id="wireSvg"><g id="wirePaths"></g><g id="wireDots"></g></svg></div>
-
   <nav id="siteNavbar" class="site-navbar" aria-label="Главная навигация">
     <div class="site-navbar__inner">
       <a href="#" class="site-navbar__logo text-lg font-bold shrink-0" style="color:var(--main-neon)">Weldor.space</a>
@@ -1327,8 +1342,8 @@
 
   <div class="content-layer">
     <main>
-      <section id="hero" class="min-h-screen flex items-center pt-28 sm:pt-36 pb-16 px-4 sm:px-6">
-        <div id="contentRail" class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section id="hero" class="min-h-screen flex items-center pt-28 sm:pt-36 pb-16 w-full">
+        <div id="contentRail" class="site-container max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div class="section-reveal hero-copy space-y-6 w-full max-w-full min-w-0">
             <span class="badge">Привет, я Weldor 👋</span>
             <h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight break-words w-full max-w-full">Разработка высоконагруженных сайтов, E-Commerce и веб-сервисов на чистом коде.</h1>
@@ -1410,8 +1425,8 @@
         </div>
       </div>
 
-      <section id="about" class="about-section py-24 px-4 sm:px-6">
-        <div class="max-w-7xl mx-auto about-grid">
+      <section id="about" class="about-section py-24 w-full">
+        <div class="site-container max-w-7xl about-grid">
           <div class="section-reveal about-col">
             <div class="about-frame">
               <img src="./ChatGPT Image 20 июл. 2026 г., 11_44_42.png" alt="Саржан Руслан" onerror="this.src='photo2.png'">
@@ -1516,52 +1531,23 @@
         </div>
       </section>
 
-      <section id="showcase" class="py-16 px-4 sm:px-6 w-full max-w-full">
-        <div class="max-w-7xl mx-auto w-full">
-          <div class="section-reveal mb-8 w-full max-w-full px-4 sm:px-0">
-            <h2 class="text-2xl sm:text-4xl font-bold break-words w-full max-w-full">Мои живые проекты</h2>
-            <p class="text-white/40 text-sm mt-2 break-words">Два флагманских кейса — скоро в полном интерактиве на Weldor.space</p>
+      <section id="showcase" class="py-16 w-full">
+        <div class="site-container max-w-7xl">
+          <div class="section-reveal mb-8 w-full">
+            <h2 class="text-2xl sm:text-4xl font-bold break-words w-full max-w-full">Мои проекты</h2>
+            <p class="text-white/40 text-sm mt-2 break-words">Флагманский кейс — финтех с характером и живым продакшеном</p>
           </div>
 
-          <div class="project-cards-grid w-full max-w-full">
-            <!-- DOYUZ -->
-            <article id="doyuz" class="project-card project-card--doyuz section-reveal w-full max-w-full">
-              <div class="project-card__hero">
-                <span class="project-card__icon" aria-hidden="true">🎵</span>
-                <span class="project-card__status">Скоро</span>
-              </div>
-              <div class="project-card__body w-full max-w-full px-4">
-                <p class="project-card__eyebrow">Media Ecosystem</p>
-                <h3 class="project-card__title break-words">DOYUZ — музыкальная вселенная</h3>
-                <p class="project-card__desc">Экосистема от сердца: плеер, лента, аудиопотоки, вкладки и фича «Креативное ДНК». Не «сайт с треками», а <strong>живой медиа-продукт</strong> на handwritten React + Web Audio API.</p>
-                <div class="project-card__stack">
-                  <span class="project-card__tag">React</span>
-                  <span class="project-card__tag">Web Audio API</span>
-                  <span class="project-card__tag">Tailwind</span>
-                  <span class="project-card__tag">Canvas Visualizer</span>
-                </div>
-                <div class="project-card__metrics">
-                  <span class="project-card__metric">⚡ latency ~18ms</span>
-                  <span class="project-card__metric">🎧 60 FPS audio viz</span>
-                  <span class="project-card__metric">📦 Clean React State</span>
-                </div>
-                <div class="project-card__actions">
-                  <button type="button" class="project-card__btn project-card__btn--soon" disabled aria-disabled="true">Скоро появится</button>
-                  <button type="button" class="project-card__btn project-card__btn--details" data-project-detail="doyuz">Смотреть детали</button>
-                </div>
-              </div>
-            </article>
-
-            <!-- ТУПРОЛЕЖКА БАНК -->
+          <div class="project-cards-grid w-full">
             <article id="tuprolezhka" class="project-card project-card--bank section-reveal w-full max-w-full">
               <div class="project-card__hero">
                 <span class="project-card__icon" aria-hidden="true">💳</span>
-                <span class="project-card__status">Скоро</span>
+                <span class="project-card__status project-card__status--live">Live</span>
               </div>
               <div class="project-card__body w-full max-w-full px-4">
                 <p class="project-card__eyebrow">Fintech Interface</p>
                 <h3 class="project-card__title break-words">ТУПРОЛЕЖКА БАНК — финтех с характером</h3>
-                <p class="project-card__desc">Абсурдный, но узнаваемый брендинг: <strong>Карта Broken Code</strong>, кэшбэк в огурцах, «бархатный risk». Под капотом — нормальный финтех: роутинг, Web Crypto, личный кабинет и secure transactions.</p>
+                <p class="project-card__desc">Абсурдный, но узнаваемый брендинг: <strong>Карта Broken Code</strong>, кэшбэк в огурцах, «бархатный risk». Под капотом — роутинг, Web Crypto, личный кабинет, симуляция транзакций и полноценный UI/UX.</p>
                 <div class="project-card__stack">
                   <span class="project-card__tag">Web Crypto API</span>
                   <span class="project-card__tag">Secure Router</span>
@@ -1574,7 +1560,7 @@
                   <span class="project-card__metric">⚡ Secure Router</span>
                 </div>
                 <div class="project-card__actions">
-                  <button type="button" class="project-card__btn project-card__btn--soon" disabled aria-disabled="true">Скоро появится</button>
+                  <a href="https://super-llama-13d6a2.netlify.app/" target="_blank" rel="noopener noreferrer" class="project-card__btn project-card__btn--open">Открыть сайт ↗</a>
                   <button type="button" class="project-card__btn project-card__btn--details" data-project-detail="tuprolezhka">Смотреть детали</button>
                 </div>
               </div>
@@ -1585,7 +1571,7 @@
 
       <!-- MIXER + SLOT -->
       <section id="control-center">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+        <div class="site-container max-w-7xl w-full">
           <div class="lab-header section-reveal">
             <span class="lab-badge">🎛️ ЛАБОРАТОРИЯ СТИЛЯ // CLEAN CODE DEMO</span>
             <h2 class="lab-title">ПОКРУТИТЕ СТИЛЬ ПОД СЕБЯ</h2>
@@ -1667,8 +1653,8 @@
         </div>
       </section>
 
-      <section id="code-inspector" class="py-20 px-4 sm:px-6">
-        <div class="max-w-7xl mx-auto w-full">
+      <section id="code-inspector" class="py-20 w-full">
+        <div class="site-container max-w-7xl w-full">
           <div class="section-reveal text-center mb-8"><h2 class="text-2xl sm:text-4xl font-bold break-words w-full max-w-full">Чистый код под капотом</h2></div>
           <div class="section-reveal ide-wrap">
             <div class="ide-mode-toggle">
@@ -1722,8 +1708,8 @@
         </div>
       </section>
 
-      <section id="social-proof" class="proof-section px-4 sm:px-6">
-        <div class="max-w-7xl mx-auto section-reveal">
+      <section id="social-proof" class="proof-section w-full">
+        <div class="site-container max-w-7xl section-reveal">
           <div class="proof-header">
             <span class="proof-badge">💬 Social Proof</span>
             <h2 class="proof-title">Что говорят клиенты</h2>
@@ -1785,8 +1771,8 @@
         </div>
       </section>
 
-      <section id="calculator" class="py-16 px-4 sm:px-6 mb-8">
-        <div class="max-w-7xl mx-auto w-full section-reveal glass rounded-2xl calc-shell">
+      <section id="calculator" class="py-16 mb-8 w-full">
+        <div class="site-container max-w-7xl w-full section-reveal glass rounded-2xl calc-shell">
           <h2 class="text-2xl sm:text-4xl font-bold calc-section-title break-words w-full max-w-full">Калькулятор — сколько стоит твоя идея</h2>
           <div class="calc-compare-badge">
             <span>Обычные студии: <span class="bad">~40 дней ❌</span></span>
@@ -1856,7 +1842,7 @@
     </main>
 
     <footer id="siteFooter">
-      <div class="footer-grid px-4 sm:px-6">
+      <div class="footer-grid site-container max-w-7xl">
         <div class="footer-col">
           <p class="footer-brand-name">Weldor.space</p>
           <p class="footer-brand-desc">Разработка веб-систем, Web App и интерфейсов.</p>
@@ -1887,9 +1873,17 @@
           </div>
         </div>
         <div class="footer-col">
+          <p class="footer-col-title">Соцсети</p>
+          <div class="footer-social-stack">
+            <a href="https://www.youtube.com/@WELDOR-01" target="_blank" rel="noopener noreferrer" class="footer-social-link"><span><i class="fa-brands fa-youtube"></i> YouTube</span>↗</a>
+            <a href="https://t.me/weldorspace" target="_blank" rel="noopener noreferrer" class="footer-social-link"><span><i class="fa-brands fa-telegram"></i> Telegram</span>↗</a>
+            <a href="https://tiktok.com/@iam.veldor" target="_blank" rel="noopener noreferrer" class="footer-social-link"><span><i class="fa-brands fa-tiktok"></i> TikTok</span>↗</a>
+          </div>
+        </div>
+        <div class="footer-col">
           <p class="footer-col-title">Связь</p>
           <div class="footer-contact-stack">
-            <a href="https://t.me/Iamveldor" target="_blank" rel="noopener noreferrer" class="footer-contact-btn" id="footerTgLink"><span><i class="fa-brands fa-telegram"></i> Telegram</span>➔</a>
+            <a href="https://t.me/weldorspace" target="_blank" rel="noopener noreferrer" class="footer-contact-btn" id="footerTgLink"><span><i class="fa-brands fa-telegram"></i> Telegram</span>➔</a>
             <a href="https://wa.me/77715134018" target="_blank" rel="noopener noreferrer" class="footer-contact-btn" id="footerWaLink"><span><i class="fa-brands fa-whatsapp"></i> WhatsApp</span>➔</a>
             <button type="button" class="footer-email-btn relative z-10 cursor-pointer" id="footerCopyEmail" data-email="weldor.space@gmail.com"><i class="fa-regular fa-envelope"></i> Скопировать Email</button>
           </div>
@@ -2262,6 +2256,7 @@
   }
 
   function buildWires(){
+    if(!wireMount || !wirePathsG || !wireDotsG || !wireSvg) return;
     wirePathsG.innerHTML = '';
     wireDotsG.innerHTML = '';
     wireRoutes = [];
@@ -3122,13 +3117,9 @@
     if(!modal || !titleEl || !bodyEl) return;
 
     var PROJECT_DETAILS = {
-      doyuz: {
-        title: 'DOYUZ — музыкальная вселенная',
-        html: '<p>DOYUZ — проект от сердца. Экосистема с плеером, лентой, вкладками, аудиопотоками и фичей «Креативное ДНК». Handwritten React + Web Audio API, без конструкторов.</p><p>Функции: резонансы, комментарии, WAVES-поток, визуализация частот 60 FPS, portfolio seed-режим для демо.</p><div class="project-modal-stack"><span>React</span><span>Web Audio API</span><span>Tailwind</span><span>Canvas</span></div><p style="color:rgba(255,215,0,.7);font-size:.78rem">Полная интерактивная версия скоро на Weldor.space</p>'
-      },
       tuprolezhka: {
         title: 'ТУПРОЛЕЖКА БАНК — финтех с характером',
-        html: '<p>Финтех с абсурдным брендингом и серьёзной архитектурой: карта Broken Code, кэшбэк в огурцах, личный кабинет, симуляция транзакций и Web Crypto.</p><p>UI/UX в стиле «бархатного risk», под капотом — secure router, структура ЛК, trading-модуль и космический фон Aurora OS.</p><div class="project-modal-stack"><span>Web Crypto API</span><span>Vanilla JS</span><span>Tailwind</span><span>Secure Router</span></div><p style="color:rgba(255,215,0,.7);font-size:.78rem">Live-версия скоро на Weldor.space</p>'
+        html: '<p>Финтех с абсурдным брендингом и серьёзной архитектурой: карта Broken Code, кэшбэк в огурцах, личный кабинет, симуляция транзакций и Web Crypto.</p><p>UI/UX в стиле «бархатного risk», под капотом — secure router, trading-модуль и полноценный продакшен.</p><div class="project-modal-stack"><span>Web Crypto API</span><span>Vanilla JS</span><span>Tailwind</span><span>Secure Router</span></div><p style="margin-top:.75rem"><a href="https://super-llama-13d6a2.netlify.app/" target="_blank" rel="noopener noreferrer" style="color:var(--main-neon);font-weight:700">Открыть сайт ↗</a></p>'
       }
     };
 
