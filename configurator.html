@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Конфигуратор проекта — Weldor.space</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --graphite: #0B0C10;
+      --surface: #16171B;
+      --border: #24262E;
+      --purple: #8A2BE2;
+      --neon: #FFD700;
+      --neon-dim: rgba(255, 215, 0, 0.15);
+      --glow: 0.4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--graphite);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 40% at 15% 20%, rgba(255, 215, 0, 0.07), transparent 60%),
+        radial-gradient(ellipse 50% 35% at 85% 80%, rgba(138, 43, 226, 0.08), transparent 55%);
+      z-index: 0;
+    }
+    .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Nav */
+    .top-nav {
+      position: sticky; top: 0; z-index: 50;
+      padding: 1rem 1.25rem;
+      backdrop-filter: blur(18px);
+      background: rgba(11, 12, 16, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    .top-nav-inner {
+      max-width: 720px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .logo {
+      font-weight: 800; font-size: 1rem; color: var(--neon); text-decoration: none;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.35);
+    }
+    .back-link {
+      font-size: 0.8rem; color: rgba(255,255,255,.45); text-decoration: none;
+      display: flex; align-items: center; gap: 0.4rem; transition: color .2s;
+    }
+    .back-link:hover { color: var(--neon); }
+
+    /* Main card */
+    .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1.25rem 3rem; }
+    .cfg-card {
+      width: min(680px, 100%);
+      background: rgba(22, 23, 27, 0.88);
+      border: 1px solid rgba(255, 215, 0, 0.18);
+      border-radius: 1.25rem;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.08), 0 24px 80px rgba(0,0,0,.5);
+      padding: 2rem 1.75rem;
+    }
+    .cfg-header { text-align: center; margin-bottom: 1.75rem; }
+    .cfg-header h1 { font-size: clamp(1.35rem, 4vw, 1.75rem); font-weight: 800; margin-bottom: 0.4rem; }
+    .cfg-header p { font-size: 0.85rem; color: rgba(255,255,255,.45); }
+
+    /* Progress */
+    .progress-wrap { margin-bottom: 1.75rem; }
+    .progress-label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 0.6rem;
+    }
+    .progress-label span:last-child { color: var(--neon); }
+    .progress-track {
+      height: 4px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 999px; width: 20%;
+      background: linear-gradient(90deg, var(--purple), var(--neon));
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+      transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .progress-dots {
+      display: flex; justify-content: space-between; margin-top: 0.65rem;
+    }
+    .progress-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      border: 1px solid var(--border); color: rgba(255,255,255,.3);
+      background: rgba(255,255,255,.03);
+      transition: all 0.3s;
+    }
+    .progress-dot.done { border-color: rgba(255,215,0,.4); color: var(--neon); background: rgba(255,215,0,.08); }
+    .progress-dot.active {
+      border-color: var(--neon); color: #0B0C10; background: var(--neon);
+      box-shadow: 0 0 16px rgba(255,215,0,.45);
+    }
+
+    /* Steps */
+    .cfg-step { display: none; animation: fadeIn 0.35s ease; }
+    .cfg-step.on { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .step-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .step-desc { font-size: 0.82rem; color: rgba(255,255,255,.45); margin-bottom: 1.25rem; }
+
+    .opt-grid { display: grid; gap: 0.6rem; }
+    @media(min-width:520px){ .opt-grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+
+    .opt-btn {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      width: 100%; text-align: left; padding: 0.85rem 1rem;
+      border-radius: 0.75rem; cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+      color: rgba(255,255,255,.75);
+      font-family: inherit; font-size: 0.85rem;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+    .opt-btn:hover { border-color: rgba(255,215,0,.35); background: rgba(255,215,0,.04); }
+    .opt-btn.picked {
+      border-color: rgba(255,215,0,.55);
+      background: rgba(255,215,0,.07);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(255,215,0,.1);
+    }
+    .opt-icon { font-size: 1.25rem; flex-shrink: 0; line-height: 1; }
+    .opt-text strong { display: block; font-weight: 600; margin-bottom: 0.15rem; }
+    .opt-text small { font-size: 0.72rem; color: rgba(255,255,255,.4); }
+
+    .check-grid { display: flex; flex-direction: column; gap: 0.55rem; }
+    .check-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; border-radius: 0.75rem;
+      border: 1px solid var(--border); background: rgba(255,255,255,.025);
+      cursor: pointer; transition: border-color .2s, background .2s;
+    }
+    .check-item:hover { border-color: rgba(255,215,0,.3); }
+    .check-item.on { border-color: rgba(255,215,0,.5); background: rgba(255,215,0,.06); }
+    .check-item input { display: none; }
+    .check-box {
+      width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0;
+      border: 1px solid var(--border); background: rgba(11,12,16,.6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: transparent; transition: all .2s;
+    }
+    .check-item.on .check-box {
+      border-color: var(--neon); background: rgba(255,215,0,.15); color: var(--neon);
+    }
+    .check-label { font-size: 0.85rem; color: rgba(255,255,255,.78); }
+    .check-label small { display: block; font-size: 0.7rem; color: rgba(255,255,255,.38); margin-top: 0.1rem; }
+
+    .dual-section { display: grid; gap: 1.25rem; }
+    @media(min-width:520px){ .dual-section { grid-template-columns: 1fr 1fr; } }
+    .dual-block h5 {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,255,255,.35); margin-bottom: 0.65rem;
+    }
+
+    /* Result */
+    .result-card {
+      border-radius: 1rem; padding: 1.25rem;
+      background: linear-gradient(135deg, rgba(255,215,0,.06), rgba(138,43,226,.06));
+      border: 1px solid rgba(255,215,0,.22);
+      margin-bottom: 1.25rem;
+    }
+    .result-card h4 { font-size: 0.9rem; color: var(--neon); margin-bottom: 1rem; }
+    .result-row {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+      padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 0.82rem;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-key { color: rgba(255,255,255,.4); flex-shrink: 0; }
+    .result-val { color: rgba(255,255,255,.88); text-align: right; font-weight: 500; }
+
+    .preview-box {
+      margin-bottom: 1.25rem; padding: 1rem; border-radius: 0.75rem;
+      background: rgba(0,0,0,.35); border: 1px solid var(--border);
+      font-size: 0.78rem; line-height: 1.65; color: rgba(255,255,255,.55);
+      white-space: pre-wrap; max-height: 160px; overflow-y: auto;
+    }
+    .preview-box strong { color: var(--neon); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.5rem; }
+
+    /* Nav buttons */
+    .cfg-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 0.75rem; margin-top: 1.75rem; padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      padding: 0.65rem 1.25rem; border-radius: 0.75rem;
+      font-family: inherit; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border);
+      background: rgba(255,255,255,.04); color: rgba(255,255,255,.7);
+      transition: all .2s;
+    }
+    .btn:hover:not(:disabled) { border-color: rgba(255,255,255,.25); color: #fff; }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-primary {
+      border-color: rgba(255,215,0,.45);
+      background: rgba(255,215,0,.1);
+      color: #fff;
+      box-shadow: 0 0 24px rgba(255,215,0,.15);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: rgba(255,215,0,.18);
+      box-shadow: 0 0 32px rgba(255,215,0,.25);
+    }
+    .btn-telegram {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; padding: 0.9rem 1.5rem; border-radius: 0.85rem;
+      font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      text-decoration: none; color: #fff;
+      border: 1px solid rgba(255,215,0,.5);
+      background: linear-gradient(135deg, rgba(255,215,0,.15), rgba(138,43,226,.12));
+      box-shadow: 0 0 40px rgba(255,215,0,.2);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-telegram:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(255,215,0,.3); }
+
+    .cfg-footer { text-align: center; padding: 1rem; font-size: 0.72rem; color: rgba(255,255,255,.2); }
+  </style>
+</head>
+<body>
+<div class="page">
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a href="./index.html" class="logo">Weldor.space</a>
+      <a href="./index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> На главную</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="cfg-card">
+      <div class="cfg-header">
+        <h1>⚙️ Конфигуратор проекта</h1>
+        <p>5 шагов — соберём структуру вашего сайта за 60 секунд</p>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Прогресс</span>
+          <span id="progressText">Шаг 1 / 5</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-dots" id="progressDots">
+          <div class="progress-dot active" data-step="0">1</div>
+          <div class="progress-dot" data-step="1">2</div>
+          <div class="progress-dot" data-step="2">3</div>
+          <div class="progress-dot" data-step="3">4</div>
+          <div class="progress-dot" data-step="4">5</div>
+        </div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="cfg-step on" data-step="0">
+        <h2 class="step-title">Ниша бизнеса</h2>
+        <p class="step-desc">Что ближе к вашему проекту?</p>
+        <div class="opt-grid">
+          <button type="button" class="opt-btn" data-field="niche" data-value="Магазин">
+            <span class="opt-icon">🛒</span>
+            <span class="opt-text"><strong>Магазин</strong><small>E-Commerce, каталог, корзина</small></span>
+          </button>
+          <button type="button" class="opt-btn" data-field="niche" data-value="Лендинг">
+            <span class="opt-icon">🎯</span>
+            <span class="opt-text"><strong>Лендинг</strong><small>Одностраничник под продукт или услугу</small></span>
+          </button>
+          <button type="button" class="opt-btn" data-field="niche" data-value="Музыка / Медиа">
+            <span class="opt-icon">🎵</span>
+            <span class="opt-text"><strong>Музыка / Медиа</strong><small>Плеер, лента, контент-платформа</small></span>
+          </button>
+          <button type="button" class="opt-btn" data-field="niche" data-value="Telegram WebApp">
+            <span class="opt-icon">📱</span>
+            <span class="opt-text"><strong>Telegram WebApp</strong><small>Mini App внутри Telegram</small></span>
+          </button>
+          <button type="button" class="opt-btn" data-field="niche" data-value="Сложная экосистема">
+            <span class="opt-icon">🌐</span>
+            <span class="opt-text"><strong>Сложная экосистема</strong><small>Несколько модулей под ключ</small></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="cfg-step" data-step="1">
+        <h2 class="step-title">Главная цель</h2>
+        <p class="step-desc">Зачем вам этот продукт?</p>
+        <div class="opt-grid cols-2">
+          <button type="button" class="opt-btn" data-field="goal" data-value="Продажи онлайн">
+            <span class="opt-icon">💰</span>
+            <span class="opt-text"><strong>Продажи онлайн</strong><small>Kaspi, оплата, заказы</small></span>
+          </button>
+          <button type="button" class="opt-btn" data-field="goal" data-value="Сбор лидов">
+            <span class="opt-icon">📋</span>
+            <span class="opt-text"><strong>Сбор лидов</strong><small>Заявки, формы, CRM</small></span>
+          </button>
+          <button type="button" class="opt-btn" data-field="goal" data-value="Личный бренд">
+            <span class="opt-icon">✨</span>
+            <span class="opt-text"><strong>Личный бренд</strong><small>Портфолио, имидж, доверие</small></span>
+          </button>
+          <button type="button" class="opt-btn" data-field="goal" data-value="Автоматизация">
+            <span class="opt-icon">⚡</span>
+            <span class="opt-text"><strong>Автоматизация</strong><small>Боты, кабинеты, процессы</small></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="cfg-step" data-step="2">
+        <h2 class="step-title">Интеграции</h2>
+        <p class="step-desc">Выберите всё, что нужно (можно несколько)</p>
+        <div class="check-grid" id="integrationsGrid">
+          <label class="check-item" data-value="Kaspi Pay">
+            <input type="checkbox">
+            <span class="check-box">✓</span>
+            <span class="check-label">💳 Kaspi Pay<small>Оплата через Kaspi</small></span>
+          </label>
+          <label class="check-item" data-value="Telegram Auth">
+            <input type="checkbox">
+            <span class="check-box">✓</span>
+            <span class="check-label">📱 Telegram Auth<small>Вход через Telegram</small></span>
+          </label>
+          <label class="check-item" data-value="Личный кабинет">
+            <input type="checkbox">
+            <span class="check-box">✓</span>
+            <span class="check-label">👤 Личный кабинет<small>Профиль, история, настройки</small></span>
+          </label>
+          <label class="check-item" data-value="Анимации">
+            <input type="checkbox">
+            <span class="check-box">✓</span>
+            <span class="check-label">🎬 Анимации<small>Motion, scroll-эффекты, 3D</small></span>
+          </label>
+          <label class="check-item" data-value="Админка">
+            <input type="checkbox">
+            <span class="check-box">✓</span>
+            <span class="check-label">🛠 Админка<small>Панель управления контентом</small></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="cfg-step" data-step="3">
+        <h2 class="step-title">Сроки и бюджет</h2>
+        <p class="step-desc">Когда нужен запуск и в каком диапазоне бюджета?</p>
+        <div class="dual-section">
+          <div class="dual-block">
+            <h5>Сроки</h5>
+            <div class="opt-grid">
+              <button type="button" class="opt-btn" data-field="timeline" data-value="3–5 дней">
+                <span class="opt-icon">⚡</span>
+                <span class="opt-text"><strong>3–5 дней</strong><small>Express-запуск</small></span>
+              </button>
+              <button type="button" class="opt-btn" data-field="timeline" data-value="1–2 недели">
+                <span class="opt-icon">📅</span>
+                <span class="opt-text"><strong>1–2 недели</strong><small>Стандартный цикл</small></span>
+              </button>
+            </div>
+          </div>
+          <div class="dual-block">
+            <h5>Бюджет</h5>
+            <div class="opt-grid">
+              <button type="button" class="opt-btn" data-field="budget" data-value="80 000 – 150 000 ₸">
+                <span class="opt-icon">💵</span>
+                <span class="opt-text"><strong>80k – 150k ₸</strong><small>Лендинг / витрина</small></span>
+              </button>
+              <button type="button" class="opt-btn" data-field="budget" data-value="150 000 – 300 000 ₸">
+                <span class="opt-icon">💎</span>
+                <span class="opt-text"><strong>150k – 300k ₸</strong><small>Магазин / WebApp</small></span>
+              </button>
+              <button type="button" class="opt-btn" data-field="budget" data-value="300 000+ ₸">
+                <span class="opt-icon">🚀</span>
+                <span class="opt-text"><strong>300k+ ₸</strong><small>Экосистема под ключ</small></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="cfg-step" data-step="4">
+        <h2 class="step-title">🎉 Ваш проект готов</h2>
+        <p class="step-desc">Проверьте конфигурацию и отправьте ТЗ в Telegram</p>
+        <div class="result-card" id="resultCard"></div>
+        <div class="preview-box">
+          <strong>Текст сообщения</strong>
+          <span id="messagePreview"></span>
+        </div>
+        <a href="#" class="btn-telegram" id="telegramBtn" target="_blank" rel="noopener">
+          <i class="fa-brands fa-telegram"></i> Отправить ТЗ в Telegram
+        </a>
+      </div>
+
+      <div class="cfg-nav" id="cfgNav">
+        <button type="button" class="btn" id="btnPrev" disabled>← Назад</button>
+        <button type="button" class="btn btn-primary" id="btnNext">Далее →</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="cfg-footer">© 2026 Weldor.space · Конфигуратор v1.0</footer>
+</div>
+
+<script>
+(function(){
+  var TELEGRAM = 'https://t.me/Iamveldor';
+  var TOTAL = 5;
+  var step = 0;
+
+  var state = {
+    niche: '',
+    goal: '',
+    integrations: [],
+    timeline: '',
+    budget: ''
+  };
+
+  var progressFill = document.getElementById('progressFill');
+  var progressText = document.getElementById('progressText');
+  var progressDots = document.querySelectorAll('.progress-dot');
+  var steps = document.querySelectorAll('.cfg-step');
+  var btnPrev = document.getElementById('btnPrev');
+  var btnNext = document.getElementById('btnNext');
+  var cfgNav = document.getElementById('cfgNav');
+  var resultCard = document.getElementById('resultCard');
+  var messagePreview = document.getElementById('messagePreview');
+  var telegramBtn = document.getElementById('telegramBtn');
+
+  function canProceed(){
+    if(step === 0) return !!state.niche;
+    if(step === 1) return !!state.goal;
+    if(step === 2) return true;
+    if(step === 3) return !!state.timeline && !!state.budget;
+    return true;
+  }
+
+  function buildMessage(){
+    var ints = state.integrations.length ? state.integrations.join(', ') : 'без доп. интеграций';
+    return 'Привет, Саржан! Прошёл конфигуратор на сайте.\n'
+      + 'Ниша: ' + state.niche + '\n'
+      + 'Цель: ' + state.goal + '\n'
+      + 'Интеграции: ' + ints + '\n'
+      + 'Сроки: ' + state.timeline + ' | Бюджет: ' + state.budget + '.\n'
+      + 'Готов обсудить детали!';
+  }
+
+  function renderResult(){
+    var ints = state.integrations.length ? state.integrations.join(', ') : '—';
+    var msg = buildMessage();
+    resultCard.innerHTML =
+      '<h4>📋 Итоговая конфигурация</h4>'
+      + row('Ниша', state.niche)
+      + row('Цель', state.goal)
+      + row('Интеграции', ints)
+      + row('Сроки', state.timeline)
+      + row('Бюджет', state.budget);
+    messagePreview.textContent = msg;
+    telegramBtn.href = TELEGRAM + '?text=' + encodeURIComponent(msg);
+  }
+
+  function row(key, val){
+    return '<div class="result-row"><span class="result-key">' + key + '</span><span class="result-val">' + val + '</span></div>';
+  }
+
+  function updateUI(){
+    var pct = ((step + 1) / TOTAL) * 100;
+    progressFill.style.width = pct + '%';
+    progressText.textContent = 'Шаг ' + (step + 1) + ' / ' + TOTAL;
+
+    progressDots.forEach(function(dot, i){
+      dot.classList.remove('active', 'done');
+      if(i < step) dot.classList.add('done');
+      else if(i === step) dot.classList.add('active');
+    });
+
+    steps.forEach(function(s, i){ s.classList.toggle('on', i === step); });
+
+    btnPrev.disabled = step === 0;
+
+    if(step === TOTAL - 1){
+      cfgNav.style.display = 'none';
+      renderResult();
+    } else {
+      cfgNav.style.display = 'flex';
+      btnNext.textContent = step === TOTAL - 2 ? 'Показать результат →' : 'Далее →';
+      btnNext.disabled = !canProceed();
+    }
+  }
+
+  document.querySelectorAll('.opt-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var field = btn.getAttribute('data-field');
+      var value = btn.getAttribute('data-value');
+      document.querySelectorAll('.opt-btn[data-field="' + field + '"]').forEach(function(b){ b.classList.remove('picked'); });
+      btn.classList.add('picked');
+      state[field] = value;
+      if(step < TOTAL - 1) btnNext.disabled = !canProceed();
+    });
+  });
+
+  document.querySelectorAll('.check-item').forEach(function(item){
+    item.addEventListener('click', function(e){
+      if(e.target.tagName === 'INPUT') return;
+      var cb = item.querySelector('input');
+      cb.checked = !cb.checked;
+      item.classList.toggle('on', cb.checked);
+      var val = item.getAttribute('data-value');
+      if(cb.checked){
+        if(state.integrations.indexOf(val) === -1) state.integrations.push(val);
+      } else {
+        state.integrations = state.integrations.filter(function(v){ return v !== val; });
+      }
+    });
+    item.querySelector('input').addEventListener('change', function(){
+      item.classList.toggle('on', item.querySelector('input').checked);
+    });
+  });
+
+  btnPrev.addEventListener('click', function(){
+    if(step > 0){ step--; updateUI(); }
+  });
+
+  btnNext.addEventListener('click', function(){
+    if(!canProceed()) return;
+    if(step < TOTAL - 1){ step++; updateUI(); }
+  });
+
+  updateUI();
+})();
+</script>
+</body>
+</html>

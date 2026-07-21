@@ -1,0 +1,3079 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weldor.space — Саржан / Weldor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    @property --glow-intensity { syntax: '<number>'; inherits: true; initial-value: 0.35; }
+    @property --neon-glow { syntax: '<number>'; inherits: true; initial-value: 0.35; }
+    @property --blur-size { syntax: '<number>'; inherits: true; initial-value: 18; }
+    @property --crossfade { syntax: '<number>'; inherits: true; initial-value: 1; }
+    @property --gloss-level { syntax: '<number>'; inherits: true; initial-value: 0.45; }
+    :root {
+      --purple: #8A2BE2; --mint: #FFD700; --graphite: #0B0C10; --surface: #16171B; --border: #24262E;
+      --accent-color: #FFD700; --main-neon: #FFD700; --glow-intensity: 0.35; --neon-glow: 0.35;
+      --blur-size: 18; --bg-blur: 18px;
+      --current-color: #FFD700; --gloss-level: 0.45; --style-factor: 0; --crossfade: 1;
+    }
+    html{
+      transition:
+        --glow-intensity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        --neon-glow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        --blur-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        --crossfade 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        --gloss-level 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #siteShell .glass,#siteShell .cta-glow,#siteShell .lab-badge,#siteShell .badge,#siteShell .nav-link,
+    #siteShell #siteNavbar,#siteShell .hero-status-badge,#siteShell .hero-speed-badge,#siteShell .about-stack-tag,
+    #siteShell .stack-tag,#siteShell .bank-fintech-badge,#siteShell .doyuz-tag-dark,#siteShell .doyuz-arch-badge,
+    #siteShell .vfader-val,#siteShell .mixer-reset-btn,#siteShell .lab-title,#wireMount .wire-glow,#wireMount .current-dot{
+      transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #siteShell .content-layer{
+      transition:filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      filter:saturate(calc(0.25 + var(--crossfade) * 0.75)) grayscale(calc(1 - var(--crossfade)));
+    }
+    body.festive-mode { --main-neon: #FFD700; --mint: #FF3366; --glow-intensity: 1; --current-color: #FFD700; --purple: #FF1493; }
+    body.style-clean { --style-factor: 0; }
+    body.style-cyber { --style-factor: 1; }
+    body.style-cyber #siteShell::after{
+      content:'';pointer-events:none;position:fixed;inset:0;z-index:9998;opacity:.04;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,102,.35) 2px,rgba(0,255,102,.35) 4px);
+    }
+    body.style-retro { --style-factor: 2; }
+    body.style-retro .glass{border-radius:.35rem}
+    body.plain-template .wire-glow{opacity:calc(.08 + var(--crossfade)*.35)}
+    body.plain-template .current-dot{opacity:calc(.15 + var(--crossfade)*.85)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;overflow-x:clip}
+    body{font-family:Inter,system-ui,sans-serif;background:var(--graphite);color:#fff;overflow-x:clip}
+
+    #siteShell{position:relative;min-height:100vh}
+    #wireMount{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:1}
+    #wireSvg{width:100%;height:100%;display:block}
+    .wire-base{fill:none;stroke:#2a2d35;stroke-width:5;stroke-linecap:round}
+    .wire-glow{fill:none;stroke:var(--current-color);stroke-width:2.5;stroke-linecap:round;opacity:calc(.35 + var(--glow-intensity)*.55);filter:drop-shadow(0 0 calc(6px + 14px*var(--glow-intensity)) var(--current-color))}
+    .current-dot{fill:var(--current-color);filter:drop-shadow(0 0 calc(10px + 12px*var(--glow-intensity)) var(--current-color))}
+
+    .content-layer{position:relative;z-index:2}
+    .glass{background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--border);backdrop-filter:blur(calc(var(--blur-size) * 1px));box-shadow:0 0 calc(35px*var(--glow-intensity)) color-mix(in srgb,var(--main-neon) 30%,transparent)}
+    .section-reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+    .section-reveal.visible{opacity:1;transform:none}
+    .nav-link{color:rgba(255,255,255,.5);text-decoration:none;font-size:.875rem}
+    .nav-link:hover{color:#fff}
+    #siteNavbar{
+      position:fixed;top:1rem;left:50%;transform:translateX(-50%);
+      z-index:100;width:92%;max-width:72rem;
+      background:rgba(10,10,15,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.1);border-radius:1rem;
+      padding:.75rem 1.5rem;box-shadow:0 10px 30px rgba(0,0,0,.5);
+    }
+    .site-navbar__inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%}
+    .cta-glow{display:inline-block;text-decoration:none;padding:.65rem 1.2rem;border-radius:.75rem;font-weight:600;font-size:.875rem;border:1px solid color-mix(in srgb,var(--main-neon) 45%,transparent);background:color-mix(in srgb,var(--purple) 12%,transparent);box-shadow:0 0 calc(20px*var(--glow-intensity)) var(--main-neon);transition:box-shadow .25s}
+    .badge,.stack-tag{font-size:.75rem;padding:.4rem .85rem;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65)}
+
+    .hero-photo-wrap{position:relative;display:flex;justify-content:center;align-items:center;width:100%}
+    .hero-photo-wrap::before{
+      content:'';position:absolute;inset:8% 0 2%;z-index:0;pointer-events:none;
+      background:radial-gradient(ellipse 70% 65% at 50% 48%,rgba(255,215,0,.28),rgba(11,12,16,.15) 52%,transparent 72%);
+      filter:blur(36px);
+    }
+    .hero-avatar-wrapper{
+      position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+      width:min(460px,92vw);animation:heroFloat 5s ease-in-out infinite;
+    }
+    .hero-photo-frame{width:100%;line-height:0}
+    .hero-cutout{
+      display:block;width:100%;max-height:560px;object-fit:contain;
+      background:transparent;mix-blend-mode:lighten;
+      filter:drop-shadow(0 0 calc(32px*var(--glow-intensity)) var(--current-color)) drop-shadow(0 18px 40px rgba(0,0,0,.45));
+    }
+    @keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+    .hero-badge-stack{
+      display:flex;flex-direction:column;align-items:stretch;gap:8px;
+      width:100%;margin-top:12px;
+    }
+    .hero-status-badge{
+      display:inline-flex;align-items:center;justify-content:flex-start;gap:.5rem;
+      width:100%;padding:8px 14px;border-radius:999px;
+      font-size:.72rem;font-weight:600;letter-spacing:.02em;color:rgba(255,255,255,.92);
+      background:rgba(18,18,18,.85);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,215,0,.2);cursor:pointer;
+      box-shadow:0 0 calc(14px*var(--glow-intensity)) rgba(255,215,0,.08);
+      transition:transform .2s,box-shadow .2s,border-color .2s;
+    }
+    .hero-status-badge:hover{transform:translateY(-1px);border-color:rgba(255,215,0,.35);box-shadow:0 0 calc(20px*var(--glow-intensity)) rgba(255,215,0,.12)}
+    .hero-pulse-dot{
+      width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;
+      animation:heroPulse 2s ease-in-out infinite;
+    }
+    @keyframes heroPulse{
+      0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.55)}
+      50%{opacity:.75;box-shadow:0 0 0 7px rgba(34,197,94,0)}
+    }
+    .hero-sub{color:rgba(255,255,255,.78);max-width:36rem;line-height:1.65}
+    .hero-cta-row{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem}
+    .hero-quiz-btn{
+      display:inline-flex;align-items:center;gap:.4rem;padding:0;border:none;background:none;
+      font-size:.82rem;font-weight:500;color:rgba(255,255,255,.62);cursor:pointer;text-align:left;
+      text-decoration:none;transition:color .2s;
+    }
+    .hero-quiz-btn:hover{color:var(--current-color)}
+    .hero-speed-badge{
+      font-size:.68rem;font-weight:600;letter-spacing:.01em;line-height:1.4;
+      padding:8px 14px;border-radius:999px;width:100%;
+      color:rgba(255,255,255,.88);
+      background:rgba(18,18,18,.85);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,215,0,.2);
+      box-shadow:0 0 12px rgba(255,215,0,.06);
+    }
+    .hero-trust{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.1rem;padding-bottom:.25rem}
+    .hero-trust-item{
+      background:rgba(255,255,255,.03);border:1px solid rgba(255,215,0,.15);
+      border-radius:10px;padding:10px 16px;min-width:0;
+    }
+    .hero-trust-val{display:block;font-size:1.2rem;font-weight:800;line-height:1.2;color:var(--current-color)}
+    .hero-trust-label{display:block;margin-top:.25rem;font-size:.72rem;color:rgba(255,255,255,.58);line-height:1.35}
+    .hero-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+    .hero-modal.open{display:flex}
+    .hero-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(6px)}
+    .hero-modal-card{
+      position:relative;z-index:1;width:min(400px,92vw);padding:1.35rem 1.5rem;border-radius:1rem;
+      background:rgba(22,23,27,.96);border:1px solid rgba(255,215,0,.22);
+      box-shadow:0 0 40px rgba(255,215,0,.12);
+    }
+    .hero-modal-card h3{font-size:.95rem;font-weight:700;margin-bottom:.65rem;color:var(--current-color)}
+    .hero-modal-card p{font-size:.875rem;line-height:1.65;color:rgba(255,255,255,.72)}
+    .hero-modal-close{
+      position:absolute;top:.65rem;right:.75rem;width:28px;height:28px;border:none;border-radius:50%;
+      background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);cursor:pointer;font-size:1.1rem;line-height:1;
+    }
+    .hero-modal-close:hover{color:#fff;background:rgba(255,255,255,.12)}
+    .quiz-steps{display:flex;gap:6px;margin-bottom:1rem}
+    .quiz-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .2s,transform .2s}
+    .quiz-dot.on{background:var(--current-color);transform:scale(1.15)}
+    .quiz-step{display:none}
+    .quiz-step.on{display:block}
+    .quiz-step h4{font-size:.9rem;font-weight:700;margin-bottom:.75rem;color:#fff}
+    .quiz-opt{
+      display:block;width:100%;text-align:left;margin-bottom:.5rem;padding:.65rem .85rem;border-radius:.65rem;
+      border:1px solid var(--border);background:rgba(255,255,255,.03);color:rgba(255,255,255,.75);
+      font-size:.82rem;cursor:pointer;transition:border-color .2s,background .2s;
+    }
+    .quiz-opt:hover,.quiz-opt.picked{border-color:color-mix(in srgb,var(--current-color) 50%,transparent);background:rgba(255,215,0,.06);color:#fff}
+    .quiz-checks{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.5rem}
+    .quiz-check-label{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:rgba(255,255,255,.7);cursor:pointer}
+    .quiz-nav{display:flex;justify-content:space-between;gap:.75rem;margin-top:1rem}
+    .quiz-nav-btn{
+      padding:.55rem 1rem;border-radius:.65rem;border:1px solid var(--border);background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.7);font-size:.8rem;font-weight:600;cursor:pointer;
+    }
+    .quiz-nav-btn.primary{border-color:color-mix(in srgb,var(--current-color) 45%,transparent);color:#fff;background:rgba(255,215,0,.08)}
+    .quiz-nav-btn:disabled{opacity:.35;cursor:not-allowed}
+    .quiz-result{font-size:.85rem;line-height:1.6;color:rgba(255,255,255,.65);margin-bottom:1rem;padding:.75rem;border-radius:.65rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,215,0,.12)}
+    .about-stack-wrap{
+      margin-top:1.25rem;padding:1rem 0;border-radius:.85rem;
+      border:1px solid rgba(255,215,0,.12);background:rgba(255,255,255,.02);overflow:hidden;
+    }
+    .about-stack-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.35);margin-bottom:.85rem;padding:0 1rem}
+    .marquee-zone{
+      display:flex;flex-direction:column;gap:.55rem;
+      mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);
+      -webkit-mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);
+    }
+    .marquee-row{overflow:hidden;width:100%}
+    .marquee-track{display:flex;width:max-content;will-change:transform}
+    .marquee-row--left .marquee-track{animation:marquee-left 25s linear infinite}
+    .marquee-row--right .marquee-track{animation:marquee-right 25s linear infinite}
+    .marquee-row:hover .marquee-track{animation-play-state:paused}
+    .marquee-content{display:flex;align-items:center;gap:.5rem;padding-right:.5rem;flex-shrink:0}
+    .about-stack-tag{
+      font-size:.72rem;font-weight:600;padding:.45rem .85rem;border-radius:999px;white-space:nowrap;
+      border:1px solid rgba(255,215,0,.18);background:rgba(255,255,255,.04);color:rgba(255,255,255,.72);
+      box-shadow:0 0 12px rgba(255,215,0,.04);
+    }
+    @keyframes marquee-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    @keyframes marquee-right{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+    @media(max-width:480px){
+      .hero-speed-badge{font-size:.62rem;line-height:1.35}
+    }
+    @media(min-width:1024px){
+      .hero-copy{padding-left:24px}
+      .hero-photo-wrap{padding-right:24px}
+    }
+    .about-grid{display:flex;flex-direction:column;gap:2.5rem;align-items:stretch}
+    .about-col{width:100%;max-width:300px;margin:0 auto}
+    .about-frame{width:100%;border:2px solid var(--main-neon);border-radius:1rem;overflow:hidden;box-shadow:0 0 22px color-mix(in srgb,var(--main-neon) 35%,transparent)}
+    .about-frame img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:var(--surface)}
+    .about-metrics{display:flex;flex-direction:column;gap:.55rem;margin-top:.85rem}
+    .about-metric{
+      padding:.65rem .9rem;border-radius:.75rem;text-align:center;font-size:.78rem;font-weight:600;
+      color:rgba(255,255,255,.78);letter-spacing:.02em;
+      border:1px solid color-mix(in srgb,var(--current-color) 40%,transparent);
+      background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,255,255,.03));
+      box-shadow:0 0 calc(12px*var(--glow-intensity)) color-mix(in srgb,var(--current-color) 18%,transparent);
+    }
+    .about-text{flex:1;min-width:0;width:100%}
+    .about-text p{margin-bottom:1rem;line-height:1.7;color:rgba(255,255,255,.62);font-size:1rem;max-width:none}
+    .about-text strong{color:rgba(255,255,255,.92)}
+    @media(min-width:1024px){
+      .about-grid{flex-direction:row;gap:2.5rem 3rem;align-items:flex-start}
+      .about-col{width:300px;flex-shrink:0;max-width:300px;margin:0;padding-left:24px}
+      .about-text{flex:1;width:100%}
+    }
+
+    /* DOYUZ — крупный телефон ~2x */
+    .doyuz-showcase{gap:2.5rem;align-items:center}
+    .iphone-wrap{display:flex;justify-content:center;padding:1rem 0;overflow:hidden}
+    .iphone16-body{
+      width:min(480px,94vw);height:min(960px,76vh);border-radius:52px;padding:12px;
+      background:linear-gradient(155deg,#484850,#141418 42%,#060608);
+      border:2px solid rgba(255,255,255,.14);
+      box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 32px color-mix(in srgb,var(--main-neon) 10%,transparent);
+      overflow:hidden;contain:layout style;
+    }
+    .iphone16-screen{
+      position:relative;width:100%;height:100%;border-radius:42px;overflow:hidden;
+      background:#000;isolation:isolate;
+      scrollbar-width:none;-ms-overflow-style:none;
+    }
+    .iphone16-screen::-webkit-scrollbar{display:none;width:0;height:0}
+    .dynamic-island{
+      position:absolute;top:12px;left:50%;transform:translateX(-50%);width:110px;height:30px;
+      background:#000;border-radius:18px;z-index:5;pointer-events:none;
+    }
+    .device-iframe{
+      width:100%;height:100%;border:none;display:block;background:#000;
+      overflow:hidden;scrollbar-width:none;-ms-overflow-style:none;
+    }
+    .device-iframe::-webkit-scrollbar,.iphone-wrap::-webkit-scrollbar{display:none;width:0;height:0}
+    .doyuz-ellipse-wrap{display:flex;justify-content:center;align-items:center;padding:.5rem 0}
+    .doyuz-ellipse{
+      background:#a3e635;border-radius:50%/40%;padding:clamp(28px,5vw,40px);
+      text-align:left;color:#000;max-width:100%;width:100%;
+      box-shadow:0 0 50px rgba(163,230,53,.25),0 20px 60px rgba(0,0,0,.35);
+    }
+    .doyuz-ellipse h3{font-size:clamp(1.35rem,3vw,1.75rem);font-weight:800;color:#000;line-height:1.2;margin-bottom:.75rem}
+    .doyuz-ellipse p{font-size:.92rem;font-weight:600;color:#000;line-height:1.65;margin-bottom:.85rem;opacity:.92}
+    .doyuz-ellipse strong{font-weight:800;color:#000}
+    .doyuz-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+    .doyuz-tag-dark{
+      font-size:.72rem;font-weight:700;padding:.45rem .85rem;border-radius:999px;
+      background:#0B0C10;color:#a3e635;border:1px solid #000;
+      box-shadow:0 0 12px rgba(163,230,53,.2);
+    }
+    .doyuz-arch-badges{
+      display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1rem;padding-top:.85rem;
+      border-top:1px solid rgba(0,0,0,.12);
+    }
+    .doyuz-arch-badge{
+      font-size:.68rem;font-weight:700;padding:.38rem .7rem;border-radius:999px;
+      background:#0B0C10;color:#a3e635;border:1px solid rgba(163,230,53,.35);
+      box-shadow:0 0 10px rgba(163,230,53,.18);white-space:nowrap;
+    }
+
+    /* BANK — MacBook browser mockup */
+    .bank-intro{
+      width:90%;max-width:1100px;margin:0 auto;padding-bottom:32px;
+    }
+    .bank-header-row{
+      display:flex;gap:clamp(1.25rem,3vw,2.5rem);align-items:flex-start;
+      justify-content:space-between;flex-wrap:wrap;
+    }
+    .bank-header-copy{flex:1;min-width:min(100%,280px)}
+    .bank-fintech-badges{
+      display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.25rem;
+    }
+    .bank-fintech-badge{
+      font-size:.72rem;font-weight:700;padding:.45rem .85rem;border-radius:999px;
+      background:rgba(220,38,38,.08);color:#fca5a5;border:1px solid rgba(220,38,38,.35);
+      box-shadow:0 0 12px rgba(220,38,38,.15);white-space:nowrap;
+    }
+    .bank-mockup-wrap{width:90%;max-width:1100px;margin:0 auto}
+    .aurora-shell{
+      position:relative;height:calc(min(620px,72vh) + 45px);border-radius:14px;overflow:hidden;
+      border:1px solid rgba(220,38,38,.22);
+      box-shadow:0 25px 50px -12px rgba(220,38,38,.25),0 30px 80px rgba(0,0,0,.55);
+    }
+    .bank-browser-win{
+      position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;
+      transform-origin:center 58%;background:#0B0C10;
+      transition:transform .58s cubic-bezier(.4,0,.2,1),opacity .48s ease,filter .48s ease;
+    }
+    .bank-browser-win--minimized{
+      transform:scale(.78) translateY(18%);opacity:0;pointer-events:none;filter:blur(2px);
+    }
+    .browser-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#1a1a1f;border-bottom:1px solid var(--border);flex-shrink:0}
+    .browser-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;border:none;padding:0}
+    .browser-dot--close{
+      cursor:pointer;background:#ef4444!important;
+      transition:transform .15s ease,box-shadow .15s ease;
+    }
+    .browser-dot--close:hover{transform:scale(1.18);box-shadow:0 0 10px rgba(239,68,68,.65)}
+    .browser-dot--close:active{transform:scale(.95)}
+    .browser-url{flex:1;min-width:0;font:11px monospace;color:rgba(255,255,255,.35);background:#0B0C10;padding:7px 12px;border-radius:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .browser-open-btn{
+      flex-shrink:0;font-size:11px;font-weight:700;padding:7px 12px;border-radius:8px;
+      color:rgba(255,255,255,.82);text-decoration:none;white-space:nowrap;
+      background:rgba(220,38,38,.14);border:1px solid rgba(220,38,38,.38);
+      transition:background .2s ease,box-shadow .2s ease,color .2s ease,transform .15s ease;
+    }
+    .browser-open-btn:hover{
+      background:rgba(220,38,38,.28);color:#fff;
+      box-shadow:0 0 18px rgba(220,38,38,.28);transform:translateY(-1px);
+    }
+    .browser-viewport{flex:1;min-height:0;background:#0B0C10;overflow:hidden;scrollbar-width:none;-ms-overflow-style:none}
+    .browser-viewport::-webkit-scrollbar{display:none}
+    .browser-viewport .device-iframe{scrollbar-width:none;-ms-overflow-style:none}
+    .browser-viewport .device-iframe::-webkit-scrollbar{display:none;width:0;height:0}
+
+    /* Aurora OS desktop */
+    .aurora-desktop{
+      position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;
+      background:
+        radial-gradient(ellipse 70% 55% at 15% 12%,rgba(138,43,226,.2),transparent 55%),
+        radial-gradient(ellipse 55% 45% at 88% 78%,rgba(0,245,212,.14),transparent 50%),
+        radial-gradient(circle at 50% 120%,rgba(220,38,38,.08),transparent 40%),
+        linear-gradient(165deg,#0a0c18 0%,#050508 55%,#080a12 100%);
+      opacity:0;pointer-events:none;transition:opacity .45s ease .08s;
+    }
+    .aurora-desktop--active{opacity:1;pointer-events:auto}
+    .aurora-desktop::before{
+      content:'';position:absolute;inset:0;pointer-events:none;opacity:.35;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%,rgba(255,255,255,.55),transparent),
+        radial-gradient(1px 1px at 30% 65%,rgba(255,255,255,.4),transparent),
+        radial-gradient(1px 1px at 70% 35%,rgba(255,255,255,.45),transparent),
+        radial-gradient(1px 1px at 85% 15%,rgba(255,255,255,.35),transparent),
+        radial-gradient(1px 1px at 55% 80%,rgba(255,255,255,.3),transparent);
+    }
+    .aurora-desktop__brand{
+      position:absolute;top:14px;left:16px;z-index:2;font-size:.68rem;font-weight:700;
+      letter-spacing:.14em;text-transform:uppercase;color:rgba(0,245,212,.55);
+      text-shadow:0 0 12px rgba(0,245,212,.25);
+    }
+    .aurora-icons{
+      position:relative;z-index:2;flex:1;display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:1.1rem 1rem;
+      padding:3rem 1.35rem 3.5rem;align-content:start;max-width:480px;
+    }
+    .aurora-icon{
+      display:flex;flex-direction:column;align-items:center;gap:.45rem;background:none;border:none;
+      cursor:pointer;color:rgba(255,255,255,.72);font-size:.62rem;font-weight:600;
+      text-align:center;padding:.45rem .35rem;border-radius:10px;
+      transition:color .2s ease,background .2s ease;
+    }
+    .aurora-icon:hover{color:#fff;background:rgba(255,255,255,.04)}
+    .aurora-icon__glyph{
+      width:54px;height:54px;display:flex;align-items:center;justify-content:center;
+      font-size:1.45rem;border-radius:14px;
+      background:rgba(255,255,255,.05);border:1px solid rgba(138,43,226,.28);
+      box-shadow:0 4px 16px rgba(0,0,0,.35);
+      transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+    }
+    .aurora-icon:hover .aurora-icon__glyph{
+      transform:translateY(-5px) scale(1.04);
+      border-color:rgba(0,245,212,.45);
+      box-shadow:0 10px 28px rgba(138,43,226,.35),0 0 20px rgba(0,245,212,.12);
+    }
+    .aurora-taskbar{
+      position:relative;z-index:2;flex-shrink:0;height:42px;display:flex;align-items:center;
+      gap:.5rem;padding:0 .75rem;background:rgba(6,8,14,.92);
+      border-top:1px solid rgba(138,43,226,.28);backdrop-filter:blur(14px);
+    }
+    .aurora-start{
+      width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,245,212,.35);
+      background:linear-gradient(135deg,rgba(138,43,226,.35),rgba(0,245,212,.18));
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      font-size:.72rem;font-weight:900;color:#fff;letter-spacing:-.02em;
+      transition:transform .15s ease,box-shadow .2s ease;
+    }
+    .aurora-start:hover{transform:scale(1.06);box-shadow:0 0 16px rgba(0,245,212,.25)}
+    .aurora-start__logo{background:linear-gradient(135deg,#bf5af2,#00f5d4);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
+    .aurora-taskbar-apps{display:flex;align-items:center;gap:.35rem;flex:1;min-width:0;padding:0 .25rem}
+    .aurora-task-btn{
+      width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:rgba(255,255,255,.05);
+      cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;
+      opacity:.45;transition:opacity .2s ease,border-color .2s ease,background .2s ease,transform .15s ease;
+    }
+    .aurora-task-btn--visible{opacity:1}
+    .aurora-task-btn--active{
+      border-color:rgba(0,245,212,.45);background:rgba(0,245,212,.1);
+      box-shadow:0 0 12px rgba(0,245,212,.15);
+    }
+    .aurora-task-btn:hover{transform:translateY(-1px)}
+    .aurora-clock{
+      flex-shrink:0;text-align:right;font-size:.62rem;line-height:1.35;color:rgba(255,255,255,.65);
+      padding:.25rem .5rem;border-radius:8px;background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);font-variant-numeric:tabular-nums;
+    }
+    .aurora-clock__time{display:block;font-weight:800;font-size:.78rem;color:rgba(0,245,212,.85)}
+    .aurora-toast-stack{
+      position:absolute;bottom:52px;left:50%;transform:translateX(-50%);z-index:5;
+      display:flex;flex-direction:column;align-items:center;gap:.45rem;pointer-events:none;
+    }
+    .aurora-toast{
+      padding:.55rem 1rem;border-radius:999px;font-size:.72rem;font-weight:700;
+      background:rgba(12,14,22,.92);color:rgba(255,255,255,.88);
+      border:1px solid rgba(0,245,212,.35);box-shadow:0 8px 24px rgba(0,0,0,.45);
+      animation:auroraToastIn .35s ease,auroraToastOut .35s ease 2.6s forwards;
+    }
+    @keyframes auroraToastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes auroraToastOut{to{opacity:0;transform:translateY(-6px)}}
+    .kinetic-modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:1rem}
+    .kinetic-modal.open{display:flex}
+    .kinetic-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px)}
+    .kinetic-modal-card{
+      position:relative;max-width:22rem;width:100%;padding:1.35rem 1.25rem;border-radius:1rem;
+      background:rgba(14,16,24,.96);border:1px solid rgba(0,245,212,.3);
+      box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 40px rgba(0,245,212,.12);
+    }
+    .kinetic-modal-card h3{font-size:1rem;font-weight:800;margin-bottom:.5rem;color:var(--main-neon)}
+    .kinetic-modal-card p{font-size:.85rem;line-height:1.65;color:rgba(255,255,255,.65);margin-bottom:1rem}
+    .kinetic-modal-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .kinetic-modal-btn{
+      flex:1;min-width:7rem;padding:.65rem .85rem;border-radius:10px;font-size:.78rem;font-weight:700;
+      cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;
+      text-decoration:none;text-align:center;transition:background .2s ease,box-shadow .2s ease;
+    }
+    .kinetic-modal-btn--primary{background:rgba(0,245,212,.15);border-color:rgba(0,245,212,.4);color:var(--main-neon)}
+    .kinetic-modal-btn--primary:hover{box-shadow:0 0 18px rgba(0,245,212,.2)}
+    .kinetic-modal-close{
+      position:absolute;top:.65rem;right:.75rem;width:28px;height:28px;border:none;border-radius:8px;
+      background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);cursor:pointer;font-size:1.1rem;line-height:1;
+    }
+    .kinetic-modal-close:hover{color:#fff;background:rgba(255,255,255,.12)}
+
+    /* Broken Code — 3D tilt card */
+    .broken-code-card{
+      width:min(240px,100%);flex-shrink:0;perspective:900px;cursor:pointer;
+      -webkit-user-select:none;user-select:none;
+    }
+    .broken-code-card__inner{
+      position:relative;transform-style:preserve-3d;
+      border-radius:16px;padding:1.15rem 1.1rem 1rem;overflow:hidden;
+      background:linear-gradient(135deg,#1a0505 0%,#3d0a0a 38%,#120303 100%);
+      border:1px solid rgba(220,38,38,.45);
+      box-shadow:0 12px 32px rgba(0,0,0,.45),0 0 24px rgba(220,38,38,.18);
+      transition:transform .12s ease-out,box-shadow .25s ease;
+      will-change:transform;
+    }
+    .broken-code-card__inner::before{
+      content:'';position:absolute;inset:-40%;pointer-events:none;
+      background:linear-gradient(105deg,transparent 42%,rgba(255,120,120,.22) 50%,transparent 58%);
+      transform:translateX(-120%) rotate(12deg);
+      transition:transform .65s ease;
+    }
+    .broken-code-card:hover .broken-code-card__inner{
+      box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 36px rgba(220,38,38,.32);
+    }
+    .broken-code-card:hover .broken-code-card__inner::before{transform:translateX(120%) rotate(12deg)}
+    .broken-code-card__chip{
+      display:inline-block;font-size:.55rem;font-weight:800;letter-spacing:.12em;
+      padding:.2rem .45rem;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);
+    }
+    .broken-code-card__title{
+      display:block;margin-top:.65rem;font-size:1rem;font-weight:800;letter-spacing:.06em;
+      color:#fecaca;text-shadow:0 0 14px rgba(248,113,113,.45);
+    }
+    .broken-code-card__num{
+      display:block;margin-top:.85rem;font:700 .95rem/1.2 ui-monospace,Consolas,monospace;
+      color:rgba(255,255,255,.75);letter-spacing:.14em;
+    }
+    .broken-code-card__name{
+      display:block;margin-top:.35rem;font-size:.62rem;font-weight:700;letter-spacing:.18em;
+      color:rgba(252,165,165,.65);text-transform:uppercase;
+    }
+    .broken-code-card__glitch{
+      position:absolute;top:.75rem;right:.85rem;font-size:.58rem;font-weight:800;
+      color:#ef4444;opacity:.85;animation:bcGlitch 2.4s steps(2) infinite;
+    }
+    @keyframes bcGlitch{
+      0%,92%,100%{opacity:.85;transform:none}
+      93%{opacity:1;transform:translate(1px,-1px)}
+      95%{opacity:.6;transform:translate(-1px,1px)}
+    }
+
+    .showcase-block{border:1px solid var(--border);border-radius:1.25rem;padding:2rem 1.25rem;background:rgba(12,13,16,.78);margin-bottom:2.5rem}
+    .project-story{font-size:.95rem;line-height:1.8;color:rgba(255,255,255,.55)}
+
+    /* Vertical faders — cross-browser */
+    #control-center{padding:5rem 1rem 4rem}
+    .lab-header{max-width:720px;margin:0 auto 2.5rem;text-align:center}
+    .lab-badge{
+      display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+      padding:.45rem .95rem;border-radius:999px;margin-bottom:1rem;
+      color:var(--main-neon);border:1px solid color-mix(in srgb,var(--main-neon) 40%,transparent);
+      background:rgba(255,255,255,.04);box-shadow:0 0 calc(18px*var(--glow-intensity)) color-mix(in srgb,var(--main-neon) 25%,transparent);
+    }
+    .lab-title{font-size:clamp(1.65rem,4vw,2.35rem);font-weight:800;letter-spacing:.04em;line-height:1.15;margin-bottom:.85rem}
+    .lab-desc{font-size:.92rem;line-height:1.75;color:rgba(255,255,255,.48);max-width:640px;margin:0 auto}
+    .mixer-lab{position:relative;max-width:1200px;margin:0 auto;padding-top:2.5rem}
+    .mixer-lab-tools{
+      position:absolute;top:0;right:0;z-index:5;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+      justify-content:flex-end;max-width:min(100%,420px);
+    }
+    .mixer-fps{
+      font-size:.62rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;
+      padding:.4rem .65rem;border-radius:999px;color:rgba(0,245,212,.85);
+      background:rgba(0,245,212,.06);border:1px solid rgba(0,245,212,.22);
+      box-shadow:0 0 calc(12px*var(--glow-intensity)) rgba(0,245,212,.08);
+    }
+    .mixer-mute-btn{
+      font-size:.68rem;font-weight:700;padding:.45rem .75rem;
+      border-radius:999px;cursor:pointer;border:1px solid var(--border);background:rgba(12,13,16,.88);
+      color:rgba(255,255,255,.7);transition:background .2s ease,border-color .2s ease,color .2s ease;
+    }
+    .mixer-mute-btn:hover{border-color:color-mix(in srgb,var(--main-neon) 45%,transparent);color:#fff}
+    .mixer-mute-btn.is-muted{color:rgba(255,255,255,.4)}
+    .mixer-reset-btn{
+      display:block;margin:1.35rem auto 0;padding:.65rem 1.15rem;border-radius:999px;
+      font-size:.72rem;font-weight:800;letter-spacing:.04em;cursor:pointer;
+      color:#fecaca;background:rgba(220,38,38,.12);border:1px solid rgba(239,68,68,.45);
+      box-shadow:0 0 calc(16px*var(--glow-intensity)) rgba(239,68,68,.15);
+      transition:transform .15s ease,background .2s ease,box-shadow .2s ease;
+    }
+    .mixer-reset-btn:hover{background:rgba(220,38,38,.22);box-shadow:0 0 22px rgba(239,68,68,.28);transform:translateY(-1px)}
+    .mixer-stage{display:flex;align-items:flex-end;justify-content:center;gap:clamp(.5rem,2vw,1.5rem);flex-wrap:wrap;max-width:1200px;margin:0 auto}
+    .fader-bank{display:flex;gap:clamp(.4rem,1.2vw,.9rem);align-items:flex-end}
+    .vfader{display:flex;flex-direction:column;align-items:center;gap:6px;width:58px}
+    .vfader label{font-size:7px;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);text-align:center;line-height:1.25;min-height:32px}
+    .vfader-val{font-size:7px;color:var(--main-neon);opacity:.75;margin-top:2px;font-weight:700}
+    .vfader-track{
+      position:relative;width:38px;height:168px;border-radius:8px;
+      background:linear-gradient(180deg,#222,#0c0c0e);border:2px solid #3a3a42;
+      box-shadow:inset 0 6px 14px rgba(0,0,0,.65);
+    }
+    .vfader-track::after{
+      content:'';position:absolute;left:50%;top:10px;bottom:10px;width:3px;transform:translateX(-50%);
+      background:linear-gradient(180deg,#555,#333);border-radius:2px;pointer-events:none;
+    }
+    .vfader-fill{
+      position:absolute;bottom:8px;left:6px;right:6px;height:0;border-radius:4px;
+      background:linear-gradient(180deg,var(--main-neon),color-mix(in srgb,var(--main-neon) 40%,transparent));
+      opacity:calc(.25 + var(--glow-intensity)*.55);pointer-events:none;
+      transition:height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    input.vfader-range{
+      position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ns-resize;z-index:3;
+      -webkit-appearance:none;appearance:none;
+    }
+    .vfader-thumb{
+      position:absolute;left:4px;right:4px;height:16px;border-radius:4px;z-index:2;pointer-events:none;
+      background:linear-gradient(180deg,#f0f0f0,#999);border:1px solid #666;
+      box-shadow:0 2px 8px rgba(0,0,0,.5),0 0 10px var(--main-neon);
+      transition:bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change:bottom;
+    }
+    .vfader-track.is-dragging .vfader-thumb,
+    .vfader-track.is-dragging .vfader-fill{transition:none}
+    .style-crossfade{
+      width:min(320px,88vw);margin-top:1rem;padding:.75rem .85rem;border-radius:12px;
+      background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);
+    }
+    .style-crossfade__labels{
+      display:flex;justify-content:space-between;gap:.5rem;margin-bottom:.55rem;
+      font-size:.58rem;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,.45);
+    }
+    .style-crossfade__labels span:last-child{text-align:right;color:rgba(255,215,0,.65)}
+    .crossfade-range{
+      -webkit-appearance:none;width:100%;height:6px;border-radius:999px;outline:none;cursor:pointer;
+      background:linear-gradient(90deg,#64748b 0%,#64748b 35%,var(--main-neon) 100%);
+      transition:background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .crossfade-range::-webkit-slider-thumb{
+      -webkit-appearance:none;width:18px;height:18px;border-radius:50%;cursor:pointer;
+      background:#fff;border:2px solid var(--main-neon);
+      box-shadow:0 0 calc(10px*var(--glow-intensity)) var(--main-neon);
+      transition:box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .crossfade-range::-moz-range-thumb{
+      width:18px;height:18px;border-radius:50%;cursor:pointer;background:#fff;border:2px solid var(--main-neon);
+    }
+
+    /* Golden slot */
+    .lucky-slot{display:flex;align-items:stretch}
+    .slot-body{
+      position:relative;width:min(320px,88vw);
+      background:linear-gradient(180deg,#4a3508,#1a1205 10%,#2a2008 55%,#120a02);
+      border:4px solid #d4af37;border-radius:18px;padding:0 18px 22px;
+      box-shadow:0 0 50px rgba(212,175,55,.2),inset 0 2px 0 rgba(255,215,0,.25);
+    }
+    .slot-dome{
+      position:absolute;top:-42px;left:50%;transform:translateX(-50%);width:74%;height:56px;
+      border-radius:50% 50% 0 0/100% 100% 0 0;
+      background:radial-gradient(ellipse at 50% 130%,#ffe566,#cfa015 50%,#5c4a08);
+      border:3px solid #e8c547;box-shadow:0 -10px 28px rgba(255,215,0,.35);
+    }
+    .slot-marquee{margin-top:32px;padding:9px;border-radius:8px;text-align:center;font-size:10px;
+      color:#ffd700;letter-spacing:.18em;background:#0a0805;border:2px solid #8b6914}
+    .slot-paytable{display:grid;grid-template-columns:1fr 1fr;gap:3px;font-size:8px;color:rgba(255,215,0,.55);
+      margin:12px 0;padding:8px;background:rgba(0,0,0,.35);border-radius:6px;border:1px solid #5c4a08}
+    .slot-reels-wrap{display:flex;justify-content:center;gap:10px;padding:14px 8px;
+      background:linear-gradient(180deg,#060606,#141414);border:3px inset #555;border-radius:10px}
+    .slot-reel{width:72px;height:88px;border-radius:8px;background:#0a0a0a;border:2px solid #666;overflow:hidden;position:relative}
+    .reel-strip{position:absolute;left:0;top:0;width:100%;will-change:transform}
+    .reel-symbol{height:88px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800}
+    .slot-msg{font-size:11px;color:rgba(255,255,255,.35);text-align:center;margin-top:10px;min-height:20px}
+    .slot-msg.win{color:#ffd700;font-weight:800;text-shadow:0 0 14px #ffd700}
+    .slot-lever-side{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;width:58px;padding-bottom:36px;cursor:pointer;user-select:none}
+    .lever-shaft{width:11px;height:108px;background:linear-gradient(90deg,#777,#eee,#888);border-radius:5px;transform-origin:top center;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+    .lever-ball{width:38px;height:38px;border-radius:50%;margin-top:-6px;background:radial-gradient(circle at 35% 30%,#ff5555,#aa0000);box-shadow:0 6px 18px rgba(200,0,0,.5)}
+    .slot-lever-side.pulled .lever-shaft{transform:rotate(32deg)}
+    .slot-col{display:flex;flex-direction:column;align-items:center}
+    .jackpot-modal{position:fixed;inset:0;z-index:320;display:none;align-items:center;justify-content:center;padding:1rem}
+    .jackpot-modal.open{display:flex}
+    .jackpot-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(10px)}
+    .jackpot-modal-card{
+      position:relative;max-width:26rem;width:100%;padding:1.5rem 1.35rem;border-radius:1.1rem;text-align:center;
+      background:linear-gradient(165deg,rgba(18,12,8,.98),rgba(10,8,6,.98));
+      border:2px solid #ffd700;box-shadow:0 0 60px rgba(255,215,0,.35),0 30px 80px rgba(0,0,0,.65);
+      animation:jackpotPop .45s cubic-bezier(.22,1,.36,1);
+    }
+    @keyframes jackpotPop{from{opacity:0;transform:scale(.88) translateY(12px)}to{opacity:1;transform:none}}
+    .jackpot-modal-card h3{font-size:1.15rem;font-weight:900;color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,.5);margin-bottom:.65rem}
+    .jackpot-modal-card p{font-size:.82rem;line-height:1.65;color:rgba(255,255,255,.72);margin-bottom:.85rem}
+    .jackpot-promo{
+      display:inline-block;font-family:Consolas,monospace;font-size:1rem;font-weight:800;
+      padding:.5rem 1rem;border-radius:8px;margin-bottom:1rem;color:#ffd700;
+      background:rgba(255,215,0,.08);border:1px dashed rgba(255,215,0,.45);
+      box-shadow:0 0 24px rgba(255,215,0,.15);
+    }
+    .jackpot-tg-btn{
+      display:inline-block;width:100%;padding:.75rem 1rem;border-radius:12px;font-size:.82rem;font-weight:800;
+      text-decoration:none;color:#000;background:linear-gradient(135deg,#ffd700,#ffb800);
+      box-shadow:0 0 28px rgba(255,215,0,.35);transition:transform .15s ease,box-shadow .2s ease;
+    }
+    .jackpot-tg-btn:hover{transform:translateY(-2px);box-shadow:0 0 36px rgba(255,215,0,.5)}
+    .jackpot-modal-close{
+      position:absolute;top:.6rem;right:.7rem;width:30px;height:30px;border:none;border-radius:8px;
+      background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);cursor:pointer;font-size:1.15rem;
+    }
+
+    .ide-wrap{max-width:56rem;margin:0 auto}
+    .ide-mode-toggle{
+      display:flex;gap:.5rem;justify-content:center;margin-bottom:.85rem;flex-wrap:wrap;
+    }
+    .ide-mode-btn{
+      font-size:.72rem;font-weight:700;padding:.5rem 1rem;border-radius:999px;cursor:pointer;
+      border:1px solid var(--border);background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);
+      transition:all .25s ease;
+    }
+    .ide-mode-btn.on{
+      color:#000;background:var(--main-neon);border-color:var(--main-neon);
+      box-shadow:0 0 18px color-mix(in srgb,var(--main-neon) 35%,transparent);
+    }
+    .ide-window{border-radius:1rem;overflow:hidden;border:1px solid var(--border);background:rgba(22,23,27,.96)}
+    .ide-titlebar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);background:rgba(12,13,16,.6)}
+    .ide-btn{width:12px;height:12px;border-radius:50%;border:none;cursor:pointer;flex-shrink:0}
+    .ide-r{background:#ef4444cc}.ide-y{background:#eab308cc;pointer-events:none}.ide-g{background:#22c55ecc;pointer-events:none}
+    .ide-tabname{
+      flex:1;min-width:0;font:11px/1.3 Consolas,monospace;color:rgba(255,255,255,.45);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;
+    }
+    .ide-titlebar-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+    .ide-icon-btn{
+      width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.55);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;
+      transition:background .2s ease,color .2s ease,border-color .2s ease;
+    }
+    .ide-icon-btn:hover{color:#fff;border-color:color-mix(in srgb,var(--main-neon) 40%,transparent)}
+    .ide-icon-btn.copied{color:var(--main-neon);border-color:var(--main-neon)}
+    .ide-run-btn{
+      font-size:11px;font-weight:800;padding:5px 12px;border-radius:6px;cursor:pointer;border:none;
+      color:#000;background:#22c55e;box-shadow:0 0 14px rgba(34,197,94,.35);
+      transition:transform .15s ease,box-shadow .2s ease;
+    }
+    .ide-run-btn:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(34,197,94,.5)}
+    .ide-run-btn.running{opacity:.7;pointer-events:none}
+    .ide-workspace{display:flex;flex:1;min-height:280px;min-width:0}
+    .ide-body{display:flex;flex-direction:column;min-height:280px}
+    .ide-sidebar{width:42px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:6px;padding:8px 0;align-items:center;background:rgba(12,13,16,.5)}
+    .ide-sbtn{width:30px;height:30px;border:none;border-radius:6px;background:transparent;color:rgba(255,255,255,.3);cursor:pointer}
+    .ide-sbtn.on{color:var(--main-neon);background:rgba(0,245,212,.1)}
+    .ide-explorer{
+      width:180px;flex-shrink:0;border-right:1px solid var(--border);background:rgba(12,13,16,.98);
+      display:flex;flex-direction:column;overflow-y:auto;
+    }
+    .ide-explorer__head{font-size:9px;font-weight:800;letter-spacing:.12em;color:rgba(255,255,255,.3);padding:10px 12px 6px}
+    .ide-file{
+      display:flex;align-items:center;gap:6px;width:100%;padding:7px 12px;border:none;background:transparent;
+      font:11px/1.3 Consolas,monospace;color:rgba(255,255,255,.5);cursor:pointer;text-align:left;
+      transition:background .2s ease,color .2s ease;
+    }
+    .ide-file:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.8)}
+    .ide-file.on{background:rgba(0,245,212,.08);color:var(--main-neon);border-left:2px solid var(--main-neon)}
+    .ide-file i{font-size:10px;opacity:.6;width:14px;text-align:center}
+    .ide-panel-ext{
+      display:none;width:180px;flex-shrink:0;border-right:1px solid var(--border);padding:12px;
+      font-size:11px;color:rgba(255,255,255,.45);background:rgba(12,13,16,.98);
+    }
+    .ide-panel-ext.on{display:block}
+    .ide-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+    .ide-stack{flex:1;position:relative;min-height:220px;min-width:0;background:#0d1117;transition:opacity .28s ease}
+    .ide-stack.is-switching{opacity:.35}
+    .ide-stack-inner{position:absolute;inset:0;overflow:hidden}
+    .ide-hl,.ide-ta{
+      position:absolute;inset:0;padding:14px 14px 14px 20px;font:13px/1.65 Consolas,monospace;
+      white-space:pre;border:none;outline:none;width:100%;height:100%;
+      overflow-x:auto;overflow-y:auto;box-sizing:border-box;
+    }
+    .ide-hl{pointer-events:none;color:#F8F8F2;background:#0d1117;z-index:1;margin:0}
+    .ide-ta{background:transparent;color:transparent;caret-color:#50FAFB;resize:none;z-index:2;scrollbar-width:thin;scrollbar-color:var(--purple) transparent}
+    .ide-ta::-webkit-scrollbar{width:6px;height:6px}
+    .ide-ta::-webkit-scrollbar-thumb{background:var(--purple);border-radius:999px}
+    .ide-terminal{
+      flex-shrink:0;max-height:0;overflow:hidden;background:#0a0a0c;border-top:1px solid transparent;
+      transition:max-height .38s cubic-bezier(.4,0,.2,1),border-color .3s ease;
+    }
+    .ide-terminal.open{max-height:130px;border-top-color:var(--border)}
+    .ide-terminal__head{
+      display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:10px;font-weight:700;
+      color:rgba(255,255,255,.35);border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .ide-terminal__body{
+      padding:10px 14px 12px 20px;font:12px/1.55 Consolas,monospace;color:#a3e635;
+      max-height:90px;overflow-y:auto;white-space:pre-wrap;
+    }
+    .ide-terminal__line{color:rgba(255,255,255,.55)}
+    .ide-terminal__line--ok{color:#a3e635;font-weight:700}
+    .tk-kw{color:#FF79C6;font-weight:700}.tk-fn{color:#8BE9FD;font-weight:600}.tk-str{color:#F1FA8C;font-weight:500}
+    .tk-cm{color:#6272A4;font-style:italic}.tk-type{color:#BD93F9}.tk-num{color:#FFB86C}.tk-op{color:#FF79C6}.tk-tag{color:#ff79c6}
+    .ide-closed{display:none}
+    .ide-deploy-toast{
+      display:none;margin-top:1rem;padding:1rem 1.15rem;border-radius:12px;text-align:center;
+      background:rgba(12,13,16,.92);border:1px solid rgba(34,197,94,.35);
+      box-shadow:0 0 24px rgba(34,197,94,.12);
+    }
+    .ide-deploy-toast.show{display:block;animation:ideToastIn .4s ease}
+    @keyframes ideToastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .ide-deploy-toast p{font-size:.85rem;color:rgba(255,255,255,.72);margin-bottom:.75rem;line-height:1.5}
+    .ide-deploy-restore{
+      font-size:.78rem;font-weight:700;padding:.55rem 1.2rem;border-radius:999px;cursor:pointer;
+      border:1px solid var(--main-neon);background:rgba(255,215,0,.1);color:var(--main-neon);
+    }
+    .ide-deploy-restore:hover{background:rgba(255,215,0,.18)}
+    .ide-reopen{display:none}
+    .range-h{-webkit-appearance:none;width:100%;height:4px;border-radius:999px;background:linear-gradient(90deg,var(--purple),var(--main-neon));outline:none}
+    .range-h::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--purple);cursor:pointer}
+    .chk{-webkit-appearance:none;width:18px;height:18px;border:1px solid var(--border);border-radius:4px;background:rgba(22,23,27,.5);cursor:pointer;position:relative}
+    .chk:checked{background:rgba(138,43,226,.25);border-color:var(--purple)}
+    .chk:checked::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--main-neon)}
+    .footer-link{color:rgba(255,255,255,.35);text-decoration:none;font-size:13px;display:block;margin-bottom:.4rem;transition:color .2s}
+    .footer-link:hover{color:var(--main-neon)}
+    #siteFooter{
+      position:relative;z-index:10;background:#08080d;
+      border-top:1px solid rgba(255,255,255,.06);border-bottom:none;
+      padding:3.5rem 1rem 0;margin-top:0;
+    }
+    .footer-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2rem 1.5rem;max-width:80rem;margin:0 auto}
+    .footer-col-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.32);margin-bottom:.85rem}
+    .footer-brand-name{font-weight:800;font-size:1rem;margin-bottom:.5rem;color:var(--main-neon)}
+    .footer-brand-desc{font-size:.82rem;line-height:1.6;color:rgba(255,255,255,.42)}
+    .footer-brand-loc{font-size:.75rem;color:rgba(255,255,255,.28);margin-top:.65rem}
+    .footer-tech-list{display:flex;flex-wrap:wrap;gap:.35rem}
+    .footer-tech-tag{
+      font-size:.68rem;font-weight:600;padding:.3rem .55rem;border-radius:6px;
+      border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(255,255,255,.52);
+    }
+    .footer-doc-btn{
+      display:block;width:100%;text-align:left;background:none;border:none;padding:0;cursor:pointer;
+      font-size:.82rem;line-height:1.45;color:rgba(255,255,255,.38);margin-bottom:.5rem;transition:color .2s;
+    }
+    .footer-doc-btn:hover{color:var(--main-neon)}
+    .footer-contact-stack{display:flex;flex-direction:column;gap:.5rem;position:relative;z-index:10}
+    .footer-contact-btn{
+      position:relative;z-index:10;cursor:pointer;
+      display:flex;align-items:center;justify-content:space-between;width:100%;
+      padding:.65rem 1rem;border-radius:.75rem;font-size:.82rem;font-weight:600;text-decoration:none;
+      border:1px solid color-mix(in srgb,var(--main-neon) 35%,transparent);
+      background:rgba(255,255,255,.03);color:rgba(255,255,255,.85);transition:border-color .2s,box-shadow .2s;
+    }
+    .footer-contact-btn:hover{border-color:color-mix(in srgb,var(--main-neon) 55%,transparent);box-shadow:0 0 16px rgba(255,215,0,.12)}
+    .footer-email-btn{
+      position:relative;z-index:10;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:.45rem;width:100%;
+      padding:.65rem 1rem;border-radius:.75rem;font-size:.82rem;font-weight:600;
+      border:1px dashed rgba(255,255,255,.14);background:transparent;color:rgba(255,255,255,.55);transition:all .2s;
+    }
+    .footer-email-btn:hover{border-color:rgba(255,215,0,.35);color:var(--main-neon)}
+    .footer-email-btn.copied{border-color:var(--main-neon);color:var(--main-neon)}
+    .footer-email-toast{
+      position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%) translateY(10px);
+      padding:.55rem 1rem;border-radius:999px;font-size:.78rem;font-weight:700;z-index:120;
+      color:#0a0a0f;background:linear-gradient(135deg,#ffe566,#FFD700);
+      box-shadow:0 8px 28px rgba(0,0,0,.45),0 0 20px rgba(255,215,0,.35);
+      opacity:0;visibility:hidden;pointer-events:none;
+      transition:opacity .25s ease,transform .25s ease,visibility .25s;
+    }
+    .footer-email-toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+    .footer-bottom{
+      margin-top:2.75rem;padding:1.15rem 0;border-top:1px solid rgba(255,255,255,.06);
+      text-align:center;font-size:.72rem;color:rgba(255,255,255,.25);letter-spacing:.02em;
+    }
+    .footer-doc-modal{position:fixed;inset:0;z-index:210;display:none;align-items:center;justify-content:center;padding:1rem}
+    .footer-doc-modal.open{display:flex}
+    .footer-doc-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .wdz-legal-card{
+      position:relative;z-index:1;display:flex;flex-direction:column;
+      max-width:56rem;width:100%;height:80vh;max-height:80vh;
+      border-radius:1rem;background:#0A0A0F;
+      border:1px solid rgba(255,215,0,.38);
+      box-shadow:0 0 48px rgba(255,215,0,.14),0 24px 64px rgba(0,0,0,.65),inset 0 0 32px rgba(255,215,0,.03);
+      overflow:hidden;
+    }
+    .wdz-legal-head{
+      display:flex;align-items:center;justify-content:space-between;gap:1rem;
+      padding:.85rem 1.15rem;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;
+    }
+    .wdz-legal-head h3{font-size:.88rem;font-weight:800;color:var(--main-neon);letter-spacing:.04em;text-transform:uppercase}
+    .wdz-legal-download{
+      padding:.4rem .75rem;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;
+      border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);transition:all .2s;
+    }
+    .wdz-legal-download:hover{border-color:rgba(255,215,0,.35);color:var(--main-neon)}
+    .wdz-legal-split{display:flex;flex:1;min-height:0}
+    .wdz-legal-sidebar{
+      width:30%;flex-shrink:0;display:flex;flex-direction:column;gap:.35rem;
+      padding:.75rem;border-right:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.22);overflow-y:auto;
+    }
+    .wdz-legal-tab{
+      display:flex;align-items:flex-start;gap:.4rem;width:100%;text-align:left;padding:.65rem .7rem;
+      border-radius:10px;border:1px solid transparent;background:transparent;
+      font-size:.72rem;font-weight:600;line-height:1.4;color:rgba(255,255,255,.42);cursor:pointer;transition:all .2s;
+    }
+    .wdz-legal-tab:hover{color:rgba(255,255,255,.78);background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+    .wdz-legal-tab.on{
+      color:#fff;border-color:rgba(255,215,0,.35);background:rgba(255,215,0,.08);
+      box-shadow:0 0 18px rgba(255,215,0,.12),inset 0 0 12px rgba(255,215,0,.04);
+    }
+    .wdz-legal-main{width:70%;display:flex;flex-direction:column;min-width:0;min-height:0}
+    .wdz-legal-scroll{
+      flex:1;min-height:0;overflow-y:auto;padding:1.1rem 1.25rem;
+      font-size:.82rem;line-height:1.68;color:rgba(255,255,255,.68);
+    }
+    .wdz-legal-scroll p{margin:0 0 .65rem}
+    .wdz-legal-scroll p:last-child{margin-bottom:0}
+    .wdz-legal-scroll strong{color:rgba(255,255,255,.92);font-weight:700}
+    .wdz-legal-h{
+      font-size:.78rem;font-weight:800;color:var(--main-neon);letter-spacing:.04em;
+      margin:1rem 0 .55rem;text-transform:uppercase;
+    }
+    .wdz-legal-h:first-child{margin-top:0}
+    .wdz-legal-ul{margin:.35rem 0 .75rem 1rem;padding:0;list-style:disc}
+    .wdz-legal-ul li{margin-bottom:.4rem;padding-left:.15rem}
+    .wdz-legal-quote{
+      margin:.75rem 0;padding:.75rem 1rem;border-left:3px solid rgba(255,215,0,.45);
+      background:rgba(255,215,0,.05);border-radius:0 8px 8px 0;color:rgba(255,255,255,.78);font-style:italic;
+    }
+    .wdz-legal-scroll::-webkit-scrollbar{width:6px}
+    .wdz-legal-scroll::-webkit-scrollbar-thumb{background:rgba(255,215,0,.25);border-radius:999px}
+    .wdz-legal-agree-bar{
+      flex-shrink:0;padding:.85rem 1.15rem;border-top:1px solid rgba(255,255,255,.06);
+      background:rgba(0,0,0,.28);display:flex;flex-direction:column;gap:.75rem;
+    }
+    .wdz-legal-agree-label{
+      display:flex;align-items:flex-start;gap:.55rem;cursor:pointer;font-size:.78rem;line-height:1.45;color:rgba(255,255,255,.55);
+    }
+    .wdz-legal-agree-chk{
+      flex-shrink:0;width:16px;height:16px;margin-top:2px;accent-color:var(--main-neon);cursor:pointer;
+    }
+    .wdz-legal-accept{
+      align-self:flex-end;padding:.6rem 1.35rem;border-radius:10px;font-size:.82rem;font-weight:700;
+      border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:rgba(255,255,255,.28);
+      cursor:not-allowed;transition:all .25s ease;
+    }
+    .wdz-legal-accept:not(:disabled){
+      cursor:pointer;color:#fff;border-color:rgba(255,215,0,.45);
+      background:linear-gradient(135deg,rgba(255,215,0,.18),rgba(138,43,226,.22));
+      box-shadow:0 0 22px rgba(255,215,0,.28),0 0 12px rgba(138,43,226,.18);
+    }
+    .wdz-legal-accept:not(:disabled):hover{
+      box-shadow:0 0 32px rgba(255,215,0,.38),0 0 18px rgba(138,43,226,.28);transform:translateY(-1px);
+    }
+    @media(max-width:768px){
+      .wdz-legal-card{height:min(88vh,720px);max-height:88vh}
+      .wdz-legal-split{flex-direction:column}
+      .wdz-legal-sidebar{width:100%;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}
+      .wdz-legal-tab{flex-shrink:0;max-width:11rem;font-size:.68rem}
+      .wdz-legal-main{width:100%;flex:1}
+      .wdz-legal-accept{align-self:stretch;text-align:center}
+    }
+
+    /* Calculator */
+    #calculator{padding-bottom:2rem;margin-bottom:2rem}
+    .calc-shell{padding:2.5rem}
+    @media(min-width:768px){.calc-shell{padding:2.5rem 2.75rem}}
+    .calc-section-title{margin-bottom:1.25rem}
+    .calc-compare-badge{
+      display:inline-flex;flex-wrap:wrap;gap:.35rem .65rem;align-items:center;
+      font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:999px;margin-bottom:1.5rem;
+      background:rgba(220,38,38,.08);border:1px solid rgba(239,68,68,.28);color:rgba(255,255,255,.7);
+    }
+    .calc-compare-badge .bad{color:#f87171}
+    .calc-compare-badge .good{color:#a3e635}
+    .calc-project-grid{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;margin-bottom:1.5rem;
+    }
+    @media(min-width:1024px){
+      .calc-project-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+    }
+    .calc-project-card{
+      position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;
+      padding:.7rem .75rem;padding-top:1.6rem;border-radius:12px;cursor:pointer;text-align:left;
+      border:1px solid var(--border);background:rgba(0,0,0,.22);color:rgba(255,255,255,.55);
+      transition:border-color .3s ease,box-shadow .3s ease,background .3s ease,color .25s ease,transform .2s ease;
+    }
+    .calc-project-card:hover{border-color:color-mix(in srgb,var(--main-neon) 35%,transparent);color:#fff;transform:translateY(-2px)}
+    .calc-project-card.on{
+      border-color:#FFD700;background:rgba(255,215,0,.09);color:#fff;
+      box-shadow:0 0 28px rgba(255,215,0,.38),0 0 12px rgba(255,215,0,.22),inset 0 0 20px rgba(255,215,0,.04);
+    }
+    .calc-project-card__check{
+      position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;
+      background:linear-gradient(135deg,#ffe566,#FFD700);color:#000;font-size:10px;font-weight:900;
+      display:none;align-items:center;justify-content:center;line-height:1;
+      box-shadow:0 0 12px rgba(255,215,0,.65);animation:calcCheckPop .35s cubic-bezier(.22,1,.36,1);
+    }
+    .calc-project-card.on .calc-project-card__check{display:flex}
+    @keyframes calcCheckPop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+    .calc-project-card__icon{font-size:1.25rem;line-height:1}
+    .calc-project-card__label{font-size:.68rem;font-weight:700;line-height:1.35}
+    .calc-project-card__meta{font-size:.58rem;color:rgba(255,255,255,.35);margin-top:2px}
+    .calc-project-card.on .calc-project-card__meta{color:rgba(255,215,0,.45)}
+    .calc-options{display:flex;flex-direction:column;gap:.55rem}
+    .calc-opt{
+      display:flex;align-items:center;gap:.65rem;cursor:pointer;padding:.55rem .65rem;border-radius:10px;
+      border:1px solid transparent;transition:background .2s ease,border-color .2s ease;
+    }
+    .calc-opt:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+    .calc-opt span.opt-name{flex:1;font-size:.82rem;color:rgba(255,255,255,.6)}
+    .calc-opt span.opt-price{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.28);white-space:nowrap}
+    .calc-result-card{
+      padding:1rem 1.1rem;border-radius:14px;border:1px solid var(--border);background:rgba(0,0,0,.25);
+    }
+    .calc-result-card p:first-child{font-size:.7rem;color:rgba(255,255,255,.38);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+    .calc-result-card p:last-child{font-size:1.35rem;font-weight:800;line-height:1.2}
+    .calc-result-num{display:inline-block;transition:transform .25s ease,opacity .25s ease}
+    .calc-result-num.is-ticking{opacity:.88;transform:scale(1.02)}
+    .calc-speed-badge{
+      margin-top:.65rem;font-size:.68rem;font-weight:700;padding:.45rem .75rem;border-radius:8px;
+      color:rgba(255,215,0,.85);background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2);
+      line-height:1.45;
+    }
+    .calc-tg-btn{display:block;text-align:center;margin-top:1rem}
+
+    /* Social proof */
+    .proof-section{padding:4rem 1rem 2rem}
+    .proof-header{text-align:center;margin-bottom:2rem}
+    .proof-badge{
+      display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+      padding:.4rem .85rem;border-radius:999px;margin-bottom:.75rem;
+      color:var(--main-neon);border:1px solid rgba(255,215,0,.28);background:rgba(255,215,0,.06);
+    }
+    .proof-title{font-size:1.5rem;font-weight:800;margin-bottom:.45rem}
+    .proof-sub{font-size:.85rem;color:rgba(255,255,255,.42);max-width:32rem;margin:0 auto}
+    .proof-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;max-width:72rem;margin:0 auto}
+    .proof-card{
+      display:flex;flex-direction:column;gap:.65rem;padding:1rem 1rem .9rem;border-radius:16px;
+      background:linear-gradient(145deg,rgba(18,19,24,.95),rgba(10,10,15,.88));
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 8px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);
+      transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+    }
+    .proof-card:hover{transform:translateY(-3px);border-color:rgba(255,215,0,.22);box-shadow:0 12px 36px rgba(0,0,0,.4),0 0 20px rgba(255,215,0,.08)}
+    .proof-card-head{display:flex;align-items:center;gap:.65rem}
+    .proof-avatar{
+      width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+      font-size:1rem;font-weight:800;color:#0a0a0f;
+      background:linear-gradient(135deg,#ffe566,#FFD700);
+      box-shadow:0 0 14px rgba(255,215,0,.35);
+    }
+    .proof-meta{min-width:0}
+    .proof-name{font-size:.82rem;font-weight:700;color:#fff;line-height:1.25}
+    .proof-role{font-size:.68rem;color:rgba(255,255,255,.38);margin-top:1px}
+    .proof-bubble{
+      position:relative;padding:.75rem .85rem;border-radius:12px 12px 12px 4px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+      font-size:.78rem;line-height:1.55;color:rgba(255,255,255,.72);
+    }
+    .proof-bubble::before{
+      content:'';position:absolute;left:14px;top:-6px;width:10px;height:10px;
+      background:rgba(255,255,255,.04);border-left:1px solid rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.06);
+      transform:rotate(45deg);
+    }
+    .proof-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.15rem}
+    .proof-tag{
+      font-size:.58rem;font-weight:700;padding:.2rem .45rem;border-radius:6px;
+      color:rgba(138,43,226,.9);background:rgba(138,43,226,.12);border:1px solid rgba(138,43,226,.25);
+    }
+    .proof-tag--gold{color:rgba(255,215,0,.85);background:rgba(255,215,0,.08);border-color:rgba(255,215,0,.22)}
+    .proof-time{font-size:.58rem;color:rgba(255,255,255,.22);text-align:right;margin-top:auto}
+
+    /* FAQ floating widget */
+    .faq-widget{
+      position:fixed;bottom:1.5rem;right:1.5rem;z-index:90;
+      pointer-events:none;
+    }
+    .faq-panel{
+      position:absolute;bottom:calc(100% + .75rem);right:0;
+      width:min(24rem,92vw);max-height:500px;overflow:hidden;
+      border-radius:1rem;background:rgba(10,10,15,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 24px rgba(138,43,226,.12);
+      opacity:0;visibility:hidden;transform:translateY(12px) scale(.96);
+      transition:opacity .3s ease,transform .35s cubic-bezier(.22,1,.36,1),visibility .3s;
+      pointer-events:none;
+    }
+    .faq-widget.open .faq-panel{opacity:1;visibility:visible;transform:translateY(0) scale(1);pointer-events:auto}
+    .faq-panel-head{
+      padding:.85rem 1rem;border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:.78rem;font-weight:800;color:var(--main-neon);letter-spacing:.04em;
+    }
+    .faq-panel-body{max-height:420px;overflow-y:auto;padding:.5rem}
+    .faq-panel-body::-webkit-scrollbar{width:5px}
+    .faq-panel-body::-webkit-scrollbar-thumb{background:rgba(255,215,0,.25);border-radius:999px}
+    .faq-item{border-radius:10px;margin-bottom:.35rem;border:1px solid transparent;overflow:hidden}
+    .faq-item[open]{border-color:rgba(255,215,0,.18);background:rgba(255,215,0,.04)}
+    .faq-item summary{
+      list-style:none;cursor:pointer;padding:.65rem .75rem;font-size:.78rem;font-weight:700;
+      color:rgba(255,255,255,.82);line-height:1.4;transition:color .2s;
+    }
+    .faq-item summary::-webkit-details-marker{display:none}
+    .faq-item summary::after{content:'＋';float:right;color:rgba(255,215,0,.55);font-weight:400}
+    .faq-item[open] summary::after{content:'−'}
+    .faq-item summary:hover{color:#fff}
+    .faq-item p{padding:0 .75rem .75rem;font-size:.74rem;line-height:1.55;color:rgba(255,255,255,.55)}
+    .faq-item p .faq-doc-link{
+      display:inline;margin-top:.35rem;padding:0;border:none;background:none;cursor:pointer;
+      font-size:inherit;font-weight:700;color:var(--main-neon);text-decoration:underline;text-underline-offset:2px;
+    }
+    .faq-fab{
+      position:relative;pointer-events:auto;
+      width:56px;height:56px;border-radius:50%;cursor:pointer;
+      border:1px solid rgba(255,215,0,.45);background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(138,43,226,.18));
+      color:#fff;font-size:1.35rem;line-height:1;
+      box-shadow:0 0 20px rgba(255,215,0,.3),0 8px 24px rgba(0,0,0,.45);
+      transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+    }
+    .faq-fab:hover{transform:scale(1.06);box-shadow:0 0 28px rgba(255,215,0,.42),0 0 16px rgba(138,43,226,.25);border-color:rgba(255,215,0,.65)}
+    .faq-widget.open .faq-fab{box-shadow:0 0 24px rgba(138,43,226,.35),0 0 14px rgba(255,215,0,.25)}
+
+    @media(max-width:1024px){
+      .proof-grid{grid-template-columns:1fr;max-width:28rem}
+      .doyuz-showcase{grid-template-columns:1fr!important}
+      .iphone-wrap{order:2}
+      .doyuz-copy{order:1}
+      .footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media(max-width:768px){
+      .faq-widget{bottom:1rem;right:1rem}
+      .about-col{max-width:min(300px,88vw);padding-left:0;margin:0 auto}
+      .iphone16-body{width:min(340px,92vw);height:min(680px,68vh)}
+      .browser-viewport{height:min(440px,52vh)}
+      .aurora-shell{height:calc(min(440px,52vh) + 45px)}
+      .bank-intro,.bank-mockup-wrap{width:94%}
+      .bank-header-row{flex-direction:column;align-items:stretch}
+      .broken-code-card{width:100%;max-width:260px;margin:0 auto}
+      .mixer-lab-tools{position:static;justify-content:center;margin:0 auto 1rem;max-width:100%}
+      .mixer-mute-btn{position:static}
+      .mixer-stage{flex-direction:column;align-items:center;gap:1.75rem}
+      .fader-bank{order:2;width:100%;justify-content:center;flex-wrap:wrap}
+      .lucky-slot{order:1;flex-direction:column;align-items:center;width:100%}
+      .slot-lever-side{flex-direction:row;width:auto;padding:1rem 0 0;justify-content:center;gap:.5rem}
+      .lever-shaft{height:72px;transform-origin:bottom center}
+      .slot-lever-side.pulled .lever-shaft{transform:rotate(-32deg)}
+      .calc-grid{grid-template-columns:1fr!important}
+      .calc-shell{padding:1.5rem 1.25rem}
+      .showcase-block{padding:1.25rem .85rem}
+      .footer-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:520px){
+      .calc-project-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<div id="siteShell">
+  <div id="wireMount" aria-hidden="true"><svg id="wireSvg"><g id="wirePaths"></g><g id="wireDots"></g></svg></div>
+
+  <nav id="siteNavbar" class="site-navbar" aria-label="Главная навигация">
+    <div class="site-navbar__inner">
+      <a href="#" class="text-lg font-bold shrink-0" style="color:var(--main-neon)">Weldor.space</a>
+      <div class="hidden md:flex gap-7">
+        <a href="#about" class="nav-link">Обо мне</a>
+        <a href="#showcase" class="nav-link">Проекты</a>
+        <a href="#control-center" class="nav-link">Микшер</a>
+        <a href="#code-inspector" class="nav-link">Код</a>
+        <a href="#calculator" class="nav-link">ROI</a>
+        <a href="./configurator.html" class="nav-link">Конфигуратор</a>
+      </div>
+      <a href="https://t.me/Iamveldor" target="_blank" rel="noopener" class="cta-glow shrink-0">Обсудить ➔</a>
+    </div>
+  </nav>
+
+  <div class="content-layer">
+    <main>
+      <section id="hero" class="min-h-screen flex items-center pt-36 pb-16 px-4">
+        <div id="contentRail" class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
+          <div class="section-reveal hero-copy space-y-6">
+            <span class="badge">Привет, я Weldor 👋</span>
+            <h1 class="text-4xl lg:text-5xl font-bold leading-tight">Разработка высоконагруженных сайтов, E-Commerce и веб-сервисов на чистом коде.</h1>
+            <p class="text-lg hero-sub">Делаю цифровые продукты с нуля — без Tilda и без «склеенных» шаблонов. Живой код, Kaspi, Telegram, музыка и экосистемы под ключ.</p>
+            <div class="hero-cta-row">
+              <a href="https://t.me/Iamveldor" target="_blank" rel="noopener" class="cta-glow">Написать мне в Telegram ➔</a>
+              <a href="./configurator.html" class="hero-quiz-btn">🎯 Не знаете, какой сайт вам нужен? Пройти конфигуратор (60 сек)</a>
+            </div>
+            <div class="hero-trust">
+              <div class="hero-trust-item">
+                <span class="hero-trust-val">1.5+ года</span>
+                <span class="hero-trust-label">опыта</span>
+              </div>
+              <div class="hero-trust-item">
+                <span class="hero-trust-val">0% Tilda</span>
+                <span class="hero-trust-label">чистый React / Node</span>
+              </div>
+              <div class="hero-trust-item">
+                <span class="hero-trust-val">от 3 дней</span>
+                <span class="hero-trust-label">на разработку</span>
+              </div>
+            </div>
+          </div>
+          <div class="section-reveal hero-photo-wrap">
+            <div class="hero-avatar-wrapper">
+              <div class="hero-photo-frame">
+                <img class="hero-cutout" src="./ChatGPT Image 20 июл. 2026 г., 11_48_47.png" alt="Саржан" onerror="this.src='photo1.png'">
+              </div>
+              <div class="hero-badge-stack">
+                <button type="button" class="hero-status-badge" id="heroStatusBtn" aria-haspopup="dialog" aria-controls="heroStatusModal">
+                  <span class="hero-pulse-dot"></span>Доступен для заказов
+                </button>
+                <div class="hero-speed-badge">⚡ Speed: 99/100 | Load: 0.12s (Чистый код)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="hero-modal" id="heroStatusModal" role="dialog" aria-labelledby="heroModalTitle" aria-hidden="true">
+        <div class="hero-modal-backdrop" id="heroModalBackdrop"></div>
+        <div class="hero-modal-card">
+          <button type="button" class="hero-modal-close" id="heroModalClose" aria-label="Закрыть">&times;</button>
+          <h3 id="heroModalTitle">🟢 Статус разработчика</h3>
+          <p>Статус: Свободен. Готов взять 1 проект в разработку прямо сейчас. Средний срок сдачи — 3–5 дней.</p>
+        </div>
+      </div>
+
+      <div class="kinetic-modal" id="kineticDawModal" role="dialog" aria-labelledby="kineticModalTitle" aria-hidden="true">
+        <div class="kinetic-modal-backdrop" id="kineticModalBackdrop"></div>
+        <div class="kinetic-modal-card">
+          <button type="button" class="kinetic-modal-close" id="kineticModalClose" aria-label="Закрыть">&times;</button>
+          <h3 id="kineticModalTitle">Kinetic DAW Engine</h3>
+          <p>Web Audio API · визуализация 60 FPS · студийные фейдеры и Lucky Slot в разделе «Центр управления».</p>
+          <div class="kinetic-modal-actions">
+            <button type="button" class="kinetic-modal-btn" id="kineticModalDismiss">Закрыть</button>
+            <a href="#control-center" class="kinetic-modal-btn kinetic-modal-btn--primary" id="kineticModalGo">Открыть микшер ➔</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="jackpot-modal" id="jackpotModal" role="dialog" aria-labelledby="jackpotModalTitle" aria-hidden="true">
+        <div class="jackpot-modal-backdrop" id="jackpotModalBackdrop"></div>
+        <div class="jackpot-modal-card">
+          <button type="button" class="jackpot-modal-close" id="jackpotModalClose" aria-label="Закрыть">&times;</button>
+          <h3 id="jackpotModalTitle">🎰 ДЖЕКПОТ ВЫБИТ!</h3>
+          <p>Вы открыли секретную скидку 10% или бесплатный Telegram-бот к вашему проекту. Промокод: <strong>WELDOR-777</strong>. Заскриньте и отправьте в ЛС!</p>
+          <div class="jackpot-promo">WELDOR-777</div>
+          <a href="#" class="jackpot-tg-btn" id="jackpotTgBtn">Скопировать и написать в Telegram</a>
+        </div>
+      </div>
+
+      <section id="about" class="about-section py-24 px-4">
+        <div class="max-w-7xl mx-auto about-grid">
+          <div class="section-reveal about-col">
+            <div class="about-frame">
+              <img src="./ChatGPT Image 20 июл. 2026 г., 11_44_42.png" alt="Саржан Руслан" onerror="this.src='photo2.png'">
+            </div>
+            <div class="about-metrics">
+              <div class="about-metric">1.5 года практики</div>
+              <div class="about-metric">9 место на хакатоне</div>
+              <div class="about-metric">Чистый React / Node</div>
+            </div>
+          </div>
+          <div class="section-reveal about-text space-y-1">
+            <p class="text-xs tracking-[.25em] uppercase" style="color:var(--main-neon)">Обо мне</p>
+            <h2 class="text-3xl font-bold mb-4">Саржан. Weldor. Человек, который собирает экосистемы руками.</h2>
+            <p>Меня зовут <strong>Саржан Руслан</strong> — в сети чаще <strong>Mellis Weldor / Weldor</strong>. Я fullstack-разработчик и контент-мейкер из Актобе. Если коротко: я обожаю, когда сайт или приложение ощущается как живой продукт, а не как очередная страница из конструктора.</p>
+            <p>Я <strong>1,5 года учился в CAP EDUCATION</strong> — там заложилась база: алгоритмы, архитектура, привычка к чистому коду. Потом был <strong>республиканский хакатон в Астане (9 место по Казахстану, 14–15 февраля)</strong> — там понял, что могу собирать рабочие системы под давлением и дедлайном, а не только «для портфолио».</p>
+            <p>Мой подход простой: <strong>никаких громоздких конструкторов</strong>. Пишу вручную — React, Node, TypeScript — чтобы загрузка была быстрой, а код можно было масштабировать, а не переписывать через полгода. Люблю, когда под капотом порядок: JWT, сессии, Web Crypto, нормальная структура папок — без магии и костылей.</p>
+            <p>Параллельно у меня <strong>музыкальный бэкграунд</strong> — поэтому DOYUZ для меня не «ещё один медиа-сайт», а экосистема с плеером, аудиопотоками и фичей «Креативное ДНК». Я делаю <strong>проекты под ключ</strong>: от витрины- каталога до магазина с Kaspi Pay, Telegram-ботом, личным кабинетом и админкой.</p>
+            <p class="border-l-2 pl-4" style="border-color:var(--purple);color:rgba(255,255,255,.45)">Если тебе нужен человек, который понимает и код, и продукт, и эстетику — давай создадим что-то своё. Без шаблонов. По-настоящему.</p>
+            <a href="https://wa.me/77715134018" target="_blank" rel="noopener" class="cta-glow inline-block mt-4">WhatsApp — обсудим ➔</a>
+            <div class="about-stack-wrap">
+              <p class="about-stack-label">Стек и интеграции</p>
+              <div class="marquee-zone">
+                <div class="marquee-row marquee-row--left">
+                  <div class="marquee-track">
+                    <div class="marquee-content">
+                      <span class="about-stack-tag">💳 Kaspi Pay</span>
+                      <span class="about-stack-tag">📱 Telegram Bots</span>
+                      <span class="about-stack-tag">⚛️ React</span>
+                      <span class="about-stack-tag">🚀 Node.js</span>
+                      <span class="about-stack-tag">🔒 JWT Security</span>
+                      <span class="about-stack-tag">🟦 TypeScript</span>
+                      <span class="about-stack-tag">⚡ Next.js</span>
+                      <span class="about-stack-tag">🎨 TailwindCSS</span>
+                      <span class="about-stack-tag">🌐 REST API</span>
+                      <span class="about-stack-tag">🗄️ PostgreSQL</span>
+                      <span class="about-stack-tag">💬 WhatsApp API</span>
+                      <span class="about-stack-tag">📦 1C Sync</span>
+                      <span class="about-stack-tag">⚡ 100/100 PageSpeed</span>
+                      <span class="about-stack-tag">🎧 Web Audio API</span>
+                      <span class="about-stack-tag">🔐 OAuth 2.0</span>
+                    </div>
+                    <div class="marquee-content" aria-hidden="true">
+                      <span class="about-stack-tag">💳 Kaspi Pay</span>
+                      <span class="about-stack-tag">📱 Telegram Bots</span>
+                      <span class="about-stack-tag">⚛️ React</span>
+                      <span class="about-stack-tag">🚀 Node.js</span>
+                      <span class="about-stack-tag">🔒 JWT Security</span>
+                      <span class="about-stack-tag">🟦 TypeScript</span>
+                      <span class="about-stack-tag">⚡ Next.js</span>
+                      <span class="about-stack-tag">🎨 TailwindCSS</span>
+                      <span class="about-stack-tag">🌐 REST API</span>
+                      <span class="about-stack-tag">🗄️ PostgreSQL</span>
+                      <span class="about-stack-tag">💬 WhatsApp API</span>
+                      <span class="about-stack-tag">📦 1C Sync</span>
+                      <span class="about-stack-tag">⚡ 100/100 PageSpeed</span>
+                      <span class="about-stack-tag">🎧 Web Audio API</span>
+                      <span class="about-stack-tag">🔐 OAuth 2.0</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="marquee-row marquee-row--right">
+                  <div class="marquee-track">
+                    <div class="marquee-content">
+                      <span class="about-stack-tag">🛡️ Web Crypto</span>
+                      <span class="about-stack-tag">🔄 WebSockets</span>
+                      <span class="about-stack-tag">🐳 Docker</span>
+                      <span class="about-stack-tag">📐 CSS Architecture</span>
+                      <span class="about-stack-tag">🎛️ Custom DAW Engine</span>
+                      <span class="about-stack-tag">🎶 Audio Visualizer</span>
+                      <span class="about-stack-tag">🔮 Framer Motion</span>
+                      <span class="about-stack-tag">📊 GraphQL</span>
+                      <span class="about-stack-tag">👁️ WebGL 3D</span>
+                      <span class="about-stack-tag">⚙️ Express.js</span>
+                      <span class="about-stack-tag">🚀 Nginx</span>
+                      <span class="about-stack-tag">⛔ Zero Tilda</span>
+                      <span class="about-stack-tag">💻 Clean Architecture</span>
+                      <span class="about-stack-tag">⚡ Real-time Stream</span>
+                      <span class="about-stack-tag">📱 Telegram WebApp</span>
+                    </div>
+                    <div class="marquee-content" aria-hidden="true">
+                      <span class="about-stack-tag">🛡️ Web Crypto</span>
+                      <span class="about-stack-tag">🔄 WebSockets</span>
+                      <span class="about-stack-tag">🐳 Docker</span>
+                      <span class="about-stack-tag">📐 CSS Architecture</span>
+                      <span class="about-stack-tag">🎛️ Custom DAW Engine</span>
+                      <span class="about-stack-tag">🎶 Audio Visualizer</span>
+                      <span class="about-stack-tag">🔮 Framer Motion</span>
+                      <span class="about-stack-tag">📊 GraphQL</span>
+                      <span class="about-stack-tag">👁️ WebGL 3D</span>
+                      <span class="about-stack-tag">⚙️ Express.js</span>
+                      <span class="about-stack-tag">🚀 Nginx</span>
+                      <span class="about-stack-tag">⛔ Zero Tilda</span>
+                      <span class="about-stack-tag">💻 Clean Architecture</span>
+                      <span class="about-stack-tag">⚡ Real-time Stream</span>
+                      <span class="about-stack-tag">📱 Telegram WebApp</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="showcase" class="py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+          <div class="section-reveal mb-8">
+            <h2 class="text-3xl font-bold">Мои живые проекты</h2>
+            <p class="text-white/40 text-sm mt-2">Ниже — настоящий код в iframe, не макеты</p>
+          </div>
+
+          <!-- DOYUZ -->
+          <div id="doyuz" class="showcase-block section-reveal">
+            <div class="doyuz-showcase grid lg:grid-cols-2 gap-10 items-center">
+              <div class="iphone-wrap">
+                <div class="iphone16-body">
+                  <div class="iphone16-screen">
+                    <div class="dynamic-island"></div>
+                    <iframe class="device-iframe" src="./doyuz/index.html?portfolio=1" title="DOYUZ" loading="lazy" scrolling="no"></iframe>
+                  </div>
+                </div>
+              </div>
+              <div class="doyuz-copy doyuz-ellipse-wrap">
+                <div class="doyuz-ellipse">
+                  <h3>DOYUZ — моя музыкальная вселенная</h3>
+                  <p>Честно? DOYUZ — это проект от сердца. Я давно был в музыке, и когда дошло до разработки, захотелось не просто «сайт с треками», а <strong>экосистему</strong>: плеер, lента, вкладки, аудиопотоки, фича «Креативное ДНК».</p>
+                  <p>Слева — реальный DOYUZ в iPhone. Скролль, жми резонансы, оставь коммент — это <strong>./doyuz/index.html</strong>, handwritten React + Audio API.</p>
+                  <div class="doyuz-tags">
+                    <span class="doyuz-tag-dark">React</span>
+                    <span class="doyuz-tag-dark">Audio API</span>
+                    <span class="doyuz-tag-dark">Tailwind</span>
+                  </div>
+                  <div class="doyuz-arch-badges">
+                    <span class="doyuz-arch-badge">⚡ latency: 18ms</span>
+                    <span class="doyuz-arch-badge">🎧 Web Audio API (60 FPS)</span>
+                    <span class="doyuz-arch-badge">📦 Clean React State</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BANK — MacBook mockup -->
+          <div class="section-reveal">
+            <div class="bank-intro">
+              <div class="bank-header-row">
+                <div class="bank-header-copy">
+                  <h3 class="text-2xl font-bold">ТУПРОЛЕЖКА БАНК — финтех с характером</h3>
+                  <p class="project-story mt-3">Этот проект — моя любовь к UI/UX и абсурдному, но узнаваемому брендингу. <strong>Карта Broken Code</strong>, кэшбэк в огурцах, «бархатный risk» — да, это ирония, но под капотом нормальный финтех: роутинг, криптография, структура личного кабинета.</p>
+                  <p class="project-story">Монитор ниже — live iframe в стиле MacBook-браузера. Нажми 🔴 Close — откроется рабочий стол <strong>Aurora OS</strong>. Внутри — настоящий <strong>./Тупролежка/index.html</strong>.</p>
+                </div>
+                <div class="broken-code-card" id="brokenCodeCard" aria-label="Карта Broken Code — интерактивная 3D-карточка">
+                  <div class="broken-code-card__inner">
+                    <span class="broken-code-card__glitch">ERR_404</span>
+                    <span class="broken-code-card__chip">VISA</span>
+                    <span class="broken-code-card__title">Broken Code</span>
+                    <span class="broken-code-card__num">•••• 4040</span>
+                    <span class="broken-code-card__name">Mellis Weldor</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bank-fintech-badges">
+                <span class="bank-fintech-badge">🛡️ Web Crypto API</span>
+                <span class="bank-fintech-badge">🥒 Кэшбэк в огурцах</span>
+                <span class="bank-fintech-badge">⚡ Secure Router</span>
+              </div>
+            </div>
+            <div class="bank-mockup-wrap">
+              <div class="aurora-shell" id="auroraShell">
+                <div class="aurora-desktop" id="auroraDesktop" aria-hidden="true">
+                  <span class="aurora-desktop__brand">Aurora OS v2.4</span>
+                  <div class="aurora-icons">
+                    <button type="button" class="aurora-icon" data-aurora-action="bank">
+                      <span class="aurora-icon__glyph">💳</span>
+                      <span>Тупролежка Банк</span>
+                    </button>
+                    <button type="button" class="aurora-icon" data-aurora-action="doyuz">
+                      <span class="aurora-icon__glyph">🎵</span>
+                      <span>DOYUZ Social</span>
+                    </button>
+                    <button type="button" class="aurora-icon" data-aurora-action="daw">
+                      <span class="aurora-icon__glyph">🎛️</span>
+                      <span>Kinetic DAW</span>
+                    </button>
+                    <button type="button" class="aurora-icon" data-aurora-action="youtube">
+                      <span class="aurora-icon__glyph">🔴</span>
+                      <span>YouTube</span>
+                    </button>
+                  </div>
+                  <div class="aurora-taskbar">
+                    <button type="button" class="aurora-start" id="auroraStartBtn" aria-label="Пуск Aurora OS">
+                      <span class="aurora-start__logo">A</span>
+                    </button>
+                    <div class="aurora-taskbar-apps" id="auroraTaskbarApps">
+                      <button type="button" class="aurora-task-btn" id="auroraTaskBank" data-aurora-task="bank" title="Тупролежка Банк" hidden>💳</button>
+                    </div>
+                    <div class="aurora-clock" id="auroraClock">
+                      <span class="aurora-clock__time">00:00:00</span>
+                      <span class="aurora-clock__date">—</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="aurora-toast-stack" id="auroraToastStack" aria-live="polite"></div>
+                <div class="browser-win bank-browser-win" id="bankWindow">
+                  <div class="browser-bar">
+                    <button type="button" class="browser-dot browser-dot--close" id="bankCloseBtn" aria-label="Close" title="Close"></button>
+                    <span class="browser-dot" style="background:#eab308" aria-hidden="true"></span>
+                    <span class="browser-dot" style="background:#22c55e" aria-hidden="true"></span>
+                    <div class="browser-url">https://tuprolezhka.bank/weldor — live iframe</div>
+                    <a class="browser-open-btn" href="https://super-llama-13d6a2.netlify.app/" target="_blank" rel="noopener noreferrer">↗ Открыть на весь экран</a>
+                  </div>
+                  <div class="browser-viewport">
+                    <iframe class="device-iframe bank-iframe" src="./Тупролежка/index.html" title="Тупролежка Банк" loading="lazy"></iframe>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MIXER + SLOT -->
+      <section id="control-center">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="lab-header section-reveal">
+            <span class="lab-badge">🎛️ ЛАБОРАТОРИЯ СТИЛЯ // CLEAN CODE DEMO</span>
+            <h2 class="lab-title">ПОКРУТИТЕ СТИЛЬ ПОД СЕБЯ</h2>
+            <p class="lab-desc">Конструкторы зажимают сайт в рамки шаблонов. Чистый код позволяет менять цвета, свечение и атмосферу за миллисекунды. Настраивайте регуляторы по бокам или дерните рычаг автомата по центру!</p>
+          </div>
+
+          <div class="mixer-lab section-reveal" id="mixerLab">
+            <div class="mixer-lab-tools">
+              <span class="mixer-fps" id="mixerFps">⚡ 60 FPS | 0.2ms GPU Render</span>
+              <button type="button" class="mixer-mute-btn is-muted" id="mixerMuteBtn" aria-pressed="true">🔇 Mute</button>
+            </div>
+
+            <div class="mixer-stage" id="mixerStage">
+              <div class="fader-bank fader-bank--left">
+                <div class="vfader" id="fader-neon">
+                  <label>Neon<br>Glow</label>
+                  <div class="vfader-track"><div class="vfader-fill"></div><div class="vfader-thumb"></div><input type="range" class="vfader-range" min="0" max="100" value="35" data-mix="neon"></div>
+                  <span class="vfader-val" data-val-for="neon">35%</span>
+                </div>
+                <div class="vfader" id="fader-style">
+                  <label>Style<br>Mode</label>
+                  <div class="vfader-track"><div class="vfader-fill"></div><div class="vfader-thumb"></div><input type="range" class="vfader-range" min="0" max="2" step="1" value="0" data-mix="style"></div>
+                  <span class="vfader-val" data-val-for="style">Clean</span>
+                </div>
+                <div class="vfader" id="fader-blur">
+                  <label>Depth<br>Blur</label>
+                  <div class="vfader-track"><div class="vfader-fill"></div><div class="vfader-thumb"></div><input type="range" class="vfader-range" min="0" max="100" value="40" data-mix="blur"></div>
+                  <span class="vfader-val" data-val-for="blur">40%</span>
+                </div>
+              </div>
+
+              <div class="slot-col">
+                <div class="lucky-slot">
+                  <div class="slot-body">
+                    <div class="slot-dome"></div>
+                    <div class="slot-marquee">★ Lucky Slot ★ Triple 7 ★</div>
+                    <div class="slot-paytable">
+                      <span>7️⃣7️⃣7️⃣ JACKPOT</span><span>🔔🔔 x15</span>
+                      <span>🍒🍒 x5</span><span>BAR x10</span>
+                    </div>
+                    <div class="slot-reels-wrap">
+                      <div class="slot-reel" id="reel1"></div>
+                      <div class="slot-reel" id="reel2"></div>
+                      <div class="slot-reel" id="reel3"></div>
+                    </div>
+                    <p class="slot-msg" id="slotMsg">Потяните рычаг — будет интрига…</p>
+                  </div>
+                  <div class="slot-lever-side" id="slotLever"><div class="lever-shaft"></div><div class="lever-ball"></div></div>
+                </div>
+                <div class="style-crossfade">
+                  <div class="style-crossfade__labels">
+                    <span>Обычный сайт (без стилей)</span>
+                    <span>↔ Чистый код Weldor</span>
+                  </div>
+                  <input type="range" id="styleCrossfade" class="crossfade-range" min="0" max="100" value="100" data-mix="crossfade" aria-label="Кроссфейдер стиля">
+                </div>
+                <button type="button" class="mixer-reset-btn" id="mixerResetBtn">🚨 Сбросить настройки стиля</button>
+              </div>
+
+              <div class="fader-bank fader-bank--right">
+                <div class="vfader" id="fader-theme">
+                  <label>Color<br>Theme</label>
+                  <div class="vfader-track"><div class="vfader-fill"></div><div class="vfader-thumb"></div><input type="range" class="vfader-range" min="0" max="3" step="1" value="0" data-mix="theme"></div>
+                  <span class="vfader-val" data-val-for="theme">Gold</span>
+                </div>
+                <div class="vfader" id="fader-speed">
+                  <label>Wire<br>Speed</label>
+                  <div class="vfader-track"><div class="vfader-fill"></div><div class="vfader-thumb"></div><input type="range" class="vfader-range" min="0" max="100" value="50" data-mix="speed"></div>
+                  <span class="vfader-val" data-val-for="speed">50%</span>
+                </div>
+                <div class="vfader" id="fader-gloss">
+                  <label>Surface<br>Gloss</label>
+                  <div class="vfader-track"><div class="vfader-fill"></div><div class="vfader-thumb"></div><input type="range" class="vfader-range" min="0" max="100" value="50" data-mix="gloss"></div>
+                  <span class="vfader-val" data-val-for="gloss">50%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="code-inspector" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+          <div class="section-reveal text-center mb-8"><h2 class="text-2xl font-bold">Чистый код под капотом</h2></div>
+          <div class="section-reveal ide-wrap">
+            <div class="ide-mode-toggle">
+              <button type="button" class="ide-mode-btn on" data-ide-mode="ts">⚡ Чистый TypeScript</button>
+              <button type="button" class="ide-mode-btn" data-ide-mode="tilda">🐌 Код с Tilda</button>
+            </div>
+            <div class="ide-window" id="ideWindow">
+              <div class="ide-titlebar">
+                <button type="button" class="ide-btn ide-r" id="ideClose" aria-label="Закрыть IDE" title="Закрыть"></button>
+                <span class="ide-btn ide-y" aria-hidden="true"></span>
+                <span class="ide-btn ide-g" aria-hidden="true"></span>
+                <span class="ide-tabname" id="ideTabName">order-validation.ts</span>
+                <div class="ide-titlebar-actions">
+                  <button type="button" class="ide-icon-btn" id="ideCopyBtn" aria-label="Копировать код" title="Копировать"><i class="fa-regular fa-copy"></i></button>
+                  <button type="button" class="ide-run-btn" id="ideRunBtn">▶ Run</button>
+                </div>
+              </div>
+              <div class="ide-body">
+                <div class="ide-workspace">
+                  <aside class="ide-sidebar">
+                    <button type="button" class="ide-sbtn on" data-p="files" aria-label="Файлы"><i class="fa-regular fa-folder-open"></i></button>
+                    <button type="button" class="ide-sbtn" data-p="ext" aria-label="Расширения"><i class="fa-solid fa-puzzle-piece"></i></button>
+                  </aside>
+                  <div class="ide-explorer" id="ideExplorer">
+                    <div class="ide-explorer__head">EXPLORER</div>
+                    <button type="button" class="ide-file on" data-file="order-validation.ts"><i class="fa-brands fa-js"></i>order-validation.ts</button>
+                    <button type="button" class="ide-file" data-file="kaspi-pay-integration.ts"><i class="fa-brands fa-js"></i>kaspi-pay-integration.ts</button>
+                    <button type="button" class="ide-file" data-file="audio-stream-engine.ts"><i class="fa-brands fa-js"></i>audio-stream-engine.ts</button>
+                  </div>
+                  <div class="ide-panel-ext" id="p-ext"><strong style="color:var(--main-neon)">Extensions</strong><br><br>✓ JWT Auth<br>✓ ESLint<br>✓ Prettier</div>
+                  <div class="ide-main">
+                    <div class="ide-stack" id="ideStack">
+                      <div class="ide-stack-inner">
+                        <pre class="ide-hl" id="ideHl"><code></code></pre>
+                        <textarea class="ide-ta" id="ideTa" spellcheck="false" aria-label="Редактор кода"></textarea>
+                      </div>
+                    </div>
+                    <div class="ide-terminal" id="ideTerminal" aria-live="polite">
+                      <div class="ide-terminal__head"><i class="fa-solid fa-terminal"></i> TERMINAL</div>
+                      <div class="ide-terminal__body" id="ideTerminalBody"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ide-deploy-toast" id="ideDeployToast">
+              <p>🚀 IDE свернута, но код уже задеплоен на сервер!</p>
+              <button type="button" class="ide-deploy-restore" id="ideRestoreBtn">Восстановить</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="social-proof" class="proof-section px-4">
+        <div class="max-w-7xl mx-auto section-reveal">
+          <div class="proof-header">
+            <span class="proof-badge">💬 Social Proof</span>
+            <h2 class="proof-title">Что говорят клиенты</h2>
+            <p class="proof-sub">Реальные отзывы о скорости, чистом коде и интеграциях Kaspi / Telegram</p>
+          </div>
+          <div class="proof-grid">
+            <article class="proof-card">
+              <div class="proof-card-head">
+                <div class="proof-avatar" aria-hidden="true">AK</div>
+                <div class="proof-meta">
+                  <p class="proof-name">Arman K.</p>
+                  <p class="proof-role">@arman_shop · Основатель e-commerce</p>
+                </div>
+              </div>
+              <div class="proof-bubble">
+                Сделали витрину с Kaspi Pay за 4 дня. Чистый код, PageSpeed 98 — после Tilda это другой уровень. Оплата и заказы работают без сбоев.
+              </div>
+              <div class="proof-tags">
+                <span class="proof-tag proof-tag--gold">Kaspi Pay</span>
+                <span class="proof-tag">4 дня</span>
+              </div>
+              <p class="proof-time">Telegram · март 2026</p>
+            </article>
+            <article class="proof-card">
+              <div class="proof-card-head">
+                <div class="proof-avatar" aria-hidden="true">DM</div>
+                <div class="proof-meta">
+                  <p class="proof-name">Dana M.</p>
+                  <p class="proof-role">@dana_pm · Product Manager</p>
+                </div>
+              </div>
+              <div class="proof-bubble">
+                Telegram Web App + авторизация через бота — всё летает, без лагов. Код аккуратный, передали репозиторий и документацию после оплаты.
+              </div>
+              <div class="proof-tags">
+                <span class="proof-tag">Telegram Auth</span>
+                <span class="proof-tag proof-tag--gold">Web App</span>
+              </div>
+              <p class="proof-time">Telegram · фев 2026</p>
+            </article>
+            <article class="proof-card">
+              <div class="proof-card-head">
+                <div class="proof-avatar" aria-hidden="true">TF</div>
+                <div class="proof-meta">
+                  <p class="proof-name">TechFlow KZ</p>
+                  <p class="proof-role">@techflow_kz · B2B-партнёр</p>
+                </div>
+              </div>
+              <div class="proof-bubble">
+                Передали репозиторий, CI/CD и деплой на наш VPS — всё по договору. Архитектура понятная, масштабировать проект смогли своей командой.
+              </div>
+              <div class="proof-tags">
+                <span class="proof-tag">Clean Code</span>
+                <span class="proof-tag proof-tag--gold">NDA ✓</span>
+              </div>
+              <p class="proof-time">Email · янв 2026</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="calculator" class="py-16 px-4 mb-8">
+        <div class="max-w-7xl mx-auto section-reveal glass rounded-2xl calc-shell">
+          <h2 class="text-2xl font-bold calc-section-title">Калькулятор — сколько стоит твоя идея</h2>
+          <div class="calc-compare-badge">
+            <span>Обычные студии: <span class="bad">~40 дней ❌</span></span>
+            <span>|</span>
+            <span>Сроки Weldor: <span class="good" id="calcCompareDays">1–3 дней ✅</span></span>
+          </div>
+          <p class="text-sm text-white/50 font-semibold mb-3">Тип проекта</p>
+          <div class="calc-project-grid" id="calcProjectGrid">
+            <button type="button" class="calc-project-card on" data-project="landing">
+              <span class="calc-project-card__check" aria-hidden="true">✓</span>
+              <span class="calc-project-card__icon">🌐</span>
+              <span class="calc-project-card__label">Landing / Промо</span>
+              <span class="calc-project-card__meta">1–3 дня · от 80 000 ₸</span>
+            </button>
+            <button type="button" class="calc-project-card" data-project="shop">
+              <span class="calc-project-card__check" aria-hidden="true">✓</span>
+              <span class="calc-project-card__icon">🛒</span>
+              <span class="calc-project-card__label">Магазин / Витрина</span>
+              <span class="calc-project-card__meta">3–5 дней · от 220 000 ₸</span>
+            </button>
+            <button type="button" class="calc-project-card" data-project="webapp">
+              <span class="calc-project-card__check" aria-hidden="true">✓</span>
+              <span class="calc-project-card__icon">📱</span>
+              <span class="calc-project-card__label">Web App / Сервис</span>
+              <span class="calc-project-card__meta">3–7 дней · от 320 000 ₸</span>
+            </button>
+            <button type="button" class="calc-project-card" data-project="tgapp">
+              <span class="calc-project-card__check" aria-hidden="true">✓</span>
+              <span class="calc-project-card__icon">🤖</span>
+              <span class="calc-project-card__label">Telegram Web App</span>
+              <span class="calc-project-card__meta">4–6 дней · от 180 000 ₸</span>
+            </button>
+            <button type="button" class="calc-project-card" data-project="saas">
+              <span class="calc-project-card__check" aria-hidden="true">✓</span>
+              <span class="calc-project-card__icon">🎛️</span>
+              <span class="calc-project-card__label">SaaS Платформа</span>
+              <span class="calc-project-card__meta">7–12 дней · от 480 000 ₸</span>
+            </button>
+          </div>
+          <div class="grid lg:grid-cols-2 gap-8 calc-grid">
+            <div class="space-y-4">
+              <p class="text-sm text-white/50 font-semibold">Интеграции и фичи</p>
+              <div class="calc-options" id="calcOptions">
+                <label class="calc-opt"><input type="checkbox" id="chkKaspi" class="chk"><span class="opt-name">Kaspi Pay / Онлайн-оплата</span><span class="opt-price">+60 000 ₸</span></label>
+                <label class="calc-opt"><input type="checkbox" id="chkTg" class="chk"><span class="opt-name">Telegram Auth / Авторизация</span><span class="opt-price">+40 000 ₸</span></label>
+                <label class="calc-opt"><input type="checkbox" id="chkDash" class="chk"><span class="opt-name">Личный кабинет пользователя</span><span class="opt-price">+80 000 ₸</span></label>
+                <label class="calc-opt"><input type="checkbox" id="chkAdmin" class="chk"><span class="opt-name">Панель администратора / Дашборд</span><span class="opt-price">+70 000 ₸</span></label>
+                <label class="calc-opt"><input type="checkbox" id="chkAi" class="chk"><span class="opt-name">Интеграция AI / Chat-GPT</span><span class="opt-price">+90 000 ₸</span></label>
+                <label class="calc-opt"><input type="checkbox" id="chkLang" class="chk"><span class="opt-name">Мультиязычность UI</span><span class="opt-price">+30 000 ₸</span></label>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="calc-result-card">
+                <p>Сроки (Cursor Speed)</p>
+                <p><span id="timeVal" class="calc-result-num" style="color:var(--main-neon)">1–3 дня</span></p>
+                <div class="calc-speed-badge">⚡ Быстрый запуск за счёт Cursor AI + Clean Architecture</div>
+              </div>
+              <div class="calc-result-card">
+                <p>Бюджет</p>
+                <p>от <span id="budgetVal" class="calc-result-num" style="color:var(--purple)">80 000 ₸</span></p>
+              </div>
+              <a href="https://t.me/Iamveldor" target="_blank" rel="noopener" class="cta-glow calc-tg-btn py-3 rounded-xl" id="calcTgBtn">Зафиксировать бюджет в Telegram ➔</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="siteFooter">
+      <div class="footer-grid px-4">
+        <div class="footer-col">
+          <p class="footer-brand-name">Weldor.space</p>
+          <p class="footer-brand-desc">Разработка веб-систем, Web App и интерфейсов.</p>
+          <p class="footer-brand-loc">📍 Локация: Казахстан</p>
+        </div>
+        <div class="footer-col">
+          <p class="footer-col-title">Навигация</p>
+          <a href="#about" class="footer-link">Обо мне</a>
+          <a href="#showcase" class="footer-link">Проекты</a>
+          <a href="#control-center" class="footer-link">Лаборатория стиля</a>
+          <a href="#code-inspector" class="footer-link">Чистый код</a>
+          <a href="#calculator" class="footer-link">Калькулятор</a>
+        </div>
+        <div class="footer-col">
+          <p class="footer-col-title">Документы &amp; Юридическое</p>
+          <button type="button" class="footer-doc-btn" data-doc="nda">📄 Шаблон NDA (Соглашение о неразглашении)</button>
+          <button type="button" class="footer-doc-btn" data-doc="contract">📝 Договор оказания услуг</button>
+          <button type="button" class="footer-doc-btn" data-doc="security">🛡️ Архитектура и безопасность</button>
+        </div>
+        <div class="footer-col">
+          <p class="footer-col-title">Технологии</p>
+          <div class="footer-tech-list">
+            <span class="footer-tech-tag">React / Next.js</span>
+            <span class="footer-tech-tag">Node.js</span>
+            <span class="footer-tech-tag">TypeScript</span>
+            <span class="footer-tech-tag">Tailwind</span>
+            <span class="footer-tech-tag">Cursor AI Engine</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <p class="footer-col-title">Связь</p>
+          <div class="footer-contact-stack">
+            <a href="https://t.me/Iamveldor" target="_blank" rel="noopener noreferrer" class="footer-contact-btn" id="footerTgLink"><span><i class="fa-brands fa-telegram"></i> Telegram</span>➔</a>
+            <a href="https://wa.me/77715134018" target="_blank" rel="noopener noreferrer" class="footer-contact-btn" id="footerWaLink"><span><i class="fa-brands fa-whatsapp"></i> WhatsApp</span>➔</a>
+            <button type="button" class="footer-email-btn relative z-10 cursor-pointer" id="footerCopyEmail" data-email="weldor.space@gmail.com"><i class="fa-regular fa-envelope"></i> Скопировать Email</button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 Weldor.space. All rights reserved. Built with Clean Code &amp; AI.
+      </div>
+    </footer>
+
+    <div class="footer-doc-modal" id="footerDocModal" role="dialog" aria-labelledby="footerDocTitle" aria-hidden="true">
+      <div class="footer-doc-modal-backdrop" id="footerDocBackdrop" aria-hidden="true"></div>
+      <div class="wdz-legal-card">
+        <div class="wdz-legal-head">
+          <h3 id="footerDocTitle">Legal Vault · Weldor</h3>
+          <button type="button" class="wdz-legal-download" id="footerDocDownload">⬇ Скачать файл</button>
+        </div>
+        <div class="wdz-legal-split">
+          <nav class="wdz-legal-sidebar" id="footerDocNav" aria-label="Документы">
+            <button type="button" class="wdz-legal-tab on" data-doc="nda">📄 NDA_Template.pdf</button>
+            <button type="button" class="wdz-legal-tab" data-doc="contract">📝 Service_Agreement.pdf</button>
+            <button type="button" class="wdz-legal-tab" data-doc="security">🛡️ Tech_Stack_&amp;_Architecture.md</button>
+          </nav>
+          <div class="wdz-legal-main">
+            <div class="wdz-legal-scroll" id="footerDocBody" tabindex="0"></div>
+            <div class="wdz-legal-agree-bar">
+              <label class="wdz-legal-agree-label" for="footerDocAgree">
+                <input type="checkbox" id="footerDocAgree" class="wdz-legal-agree-chk">
+                <span>Я ознакомлен(а) и полностью соглашаюсь с условиями документов Weldor.space</span>
+              </label>
+              <button type="button" class="wdz-legal-accept" id="footerDocAccept" disabled>Закрыть / Принять</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-email-toast" id="footerEmailToast" role="status" aria-live="polite">Email скопирован!</div>
+
+<div class="faq-widget" id="faqWidget" aria-live="polite">
+  <div class="faq-panel" id="faqPanel" role="dialog" aria-label="FAQ" aria-hidden="true">
+    <div class="faq-panel-head">💬 FAQ / Вопросы</div>
+    <div class="faq-panel-body">
+      <details class="faq-item">
+        <summary>Почему не Tilda или конструкторы?</summary>
+        <p>Чистый код загружается за 0.1s, не зависает под нагрузкой, не имеет абонентской платы и даёт 100% свободу в дизайне и интеграциях.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Как происходит передача прав и кода?</summary>
+        <p>После 100% оплаты вы получаете полные права на репозиторий GitHub/GitLab, сервер и архитектуру. Всё официально по договору.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Что если понадобятся правки после запуска?</summary>
+        <p>В стоимость включено 30 дней бесплатной гарантии на исправление любых багов + 2 итерации правок до релиза.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Работаешь с юр. лицами и NDA?</summary>
+        <p>Да, перед стартом можем подписать NDA и Соглашение об оказании услуг — <button type="button" class="faq-doc-link" data-doc="nda">документы в футере</button>.</p>
+      </details>
+    </div>
+  </div>
+  <button type="button" class="faq-fab" id="faqFab" aria-expanded="false" aria-controls="faqPanel" title="FAQ / Вопросы">❓</button>
+</div>
+
+<script src="./js/legal-docs.js"></script>
+<script>
+(function(){
+  var root = document.documentElement;
+  var wirePathsG = document.getElementById('wirePaths');
+  var wireDotsG = document.getElementById('wireDots');
+  var wireMount = document.getElementById('wireMount');
+  var wireSvg = document.getElementById('wireSvg');
+  var wireRoutes = [];
+  var SYM_H = 88;
+  var SYMBOLS = ['🍒', '🍌', '🍋', '🔔', 'BAR', '7️⃣'];
+  var COLOR_THEMES = [
+    { name: 'Gold', color: '#FFD700', purple: '#8A2BE2' },
+    { name: 'Neon Green', color: '#00FF66', purple: '#059669' },
+    { name: 'Cyber Purple', color: '#A855F7', purple: '#7C3AED' },
+    { name: 'Bank Red', color: '#EF4444', purple: '#DC2626' }
+  ];
+  var STYLE_MODES = ['Clean', 'Cyberpunk', 'Neon Retro'];
+  var STYLE_CLASSES = ['style-clean', 'style-cyber', 'style-retro'];
+  var MIX_DEFAULTS = { neon: 35, style: 0, blur: 40, theme: 0, speed: 50, gloss: 50, crossfade: 100 };
+  var PLAIN_THEME = { color: '#94a3b8', purple: '#64748b' };
+  var PROMO_CODE = 'WELDOR-777';
+  var MIX_LERP = 0.16;
+  var MIX_EPS = 0.002;
+
+  function hexToRgb(hex){
+    var h = hex.replace('#', '');
+    if(h.length === 3) h = h.split('').map(function(c){ return c + c; }).join('');
+    return { r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16) };
+  }
+  function rgbToHex(r, g, b){
+    return '#' + [r, g, b].map(function(v){
+      return Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0');
+    }).join('');
+  }
+  function lerpColor(a, b, t){
+    var pa = hexToRgb(a), pb = hexToRgb(b);
+    return rgbToHex(pa.r + (pb.r - pa.r) * t, pa.g + (pb.g - pa.g) * t, pa.b + (pb.b - pa.b) * t);
+  }
+  function lerpNum(a, b, t){ return a + (b - a) * t; }
+  function near(a, b){ return Math.abs(a - b) < MIX_EPS; }
+
+  /* ── rAF Mix Engine (liquid CSS vars) ── */
+  var MixEngine = {
+    target: { neon: 0.35, blurPct: 40, gloss: 0.5, themeIdx: 0, styleIdx: 0, crossfade: 1 },
+    current: { neon: 0.35, blurPct: 40, gloss: 0.5, themeIdx: 0, styleIdx: 0, crossfade: 1 },
+    rafId: null,
+    lastGpuMs: 0.2,
+    readFromDOM: function(){
+      var neonEl = document.querySelector('[data-mix="neon"]');
+      var blurEl = document.querySelector('[data-mix="blur"]');
+      var glossEl = document.querySelector('[data-mix="gloss"]');
+      var themeEl = document.querySelector('[data-mix="theme"]');
+      var styleEl = document.querySelector('[data-mix="style"]');
+      var crossEl = document.getElementById('styleCrossfade');
+      if(!neonEl) return;
+      this.target.neon = +neonEl.value / 100;
+      this.target.blurPct = +blurEl.value;
+      this.target.gloss = +glossEl.value / 100;
+      this.target.themeIdx = +themeEl.value;
+      this.target.styleIdx = +styleEl.value;
+      this.target.crossfade = crossEl ? +crossEl.value / 100 : 1;
+    },
+    applyStyleMode: function(idx){
+      STYLE_CLASSES.forEach(function(c){ document.body.classList.remove(c); });
+      document.body.classList.add(STYLE_CLASSES[idx] || 'style-clean');
+    },
+    paint: function(s){
+      var cf = s.crossfade;
+      var theme = COLOR_THEMES[Math.round(s.themeIdx)] || COLOR_THEMES[0];
+      var accent = lerpColor(PLAIN_THEME.color, theme.color, cf);
+      var purple = lerpColor(PLAIN_THEME.purple, theme.purple, cf);
+      var glow = s.neon * cf;
+      var blur = (4 + s.blurPct / 100 * 40) * (0.35 + cf * 0.65);
+      var gloss = s.gloss * (0.4 + cf * 0.6);
+
+      root.style.setProperty('--crossfade', cf);
+      root.style.setProperty('--glow-intensity', glow);
+      root.style.setProperty('--neon-glow', glow);
+      root.style.setProperty('--blur-size', blur);
+      root.style.setProperty('--bg-blur', blur + 'px');
+      root.style.setProperty('--gloss-level', gloss);
+      root.style.setProperty('--style-factor', s.styleIdx / 2);
+      root.style.setProperty('--accent-color', accent);
+      root.style.setProperty('--main-neon', accent);
+      root.style.setProperty('--mint', accent);
+      root.style.setProperty('--current-color', accent);
+      root.style.setProperty('--purple', purple);
+      root.style.setProperty('--neon-shadow', '0 0 ' + Math.round(8 + glow * 28) + 'px ' + accent);
+
+      document.body.classList.toggle('plain-template', cf < 0.08);
+      this.applyStyleMode(Math.round(s.styleIdx));
+    },
+    tick: function(){
+      var t0 = performance.now();
+      this.rafId = null;
+      var cur = this.current, tgt = this.target, settled = true;
+
+      cur.neon = lerpNum(cur.neon, tgt.neon, MIX_LERP);
+      cur.blurPct = lerpNum(cur.blurPct, tgt.blurPct, MIX_LERP);
+      cur.gloss = lerpNum(cur.gloss, tgt.gloss, MIX_LERP);
+      cur.crossfade = lerpNum(cur.crossfade, tgt.crossfade, MIX_LERP);
+      if(Math.round(cur.themeIdx) !== tgt.themeIdx){ cur.themeIdx = tgt.themeIdx; }
+      if(Math.round(cur.styleIdx) !== tgt.styleIdx){ cur.styleIdx = tgt.styleIdx; }
+
+      if(!near(cur.neon, tgt.neon) || !near(cur.blurPct, tgt.blurPct) || !near(cur.gloss, tgt.gloss) || !near(cur.crossfade, tgt.crossfade)){
+        settled = false;
+      }
+
+      this.paint(cur);
+      updateFaderLabels();
+      this.lastGpuMs = Math.max(0.08, performance.now() - t0);
+
+      if(!settled) this.schedule();
+    },
+    schedule: function(){
+      if(this.rafId) return;
+      this.rafId = requestAnimationFrame(this.tick.bind(this));
+    },
+    requestUpdate: function(){
+      this.readFromDOM();
+      this.schedule();
+    },
+    snap: function(){
+      this.readFromDOM();
+      this.current = JSON.parse(JSON.stringify(this.target));
+      this.paint(this.current);
+      updateFaderLabels();
+    }
+  };
+
+  /* ── Web Audio (synthesized SFX) ── */
+  var MixAudio = {
+    muted: true,
+    ctx: null,
+    ensure: function(){
+      if(this.muted) return null;
+      if(!this.ctx){
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if(!Ctx) return null;
+        this.ctx = new Ctx();
+      }
+      if(this.ctx.state === 'suspended') this.ctx.resume();
+      return this.ctx;
+    },
+    tone: function(freq, dur, type, vol, when){
+      var ctx = this.ensure();
+      if(!ctx) return;
+      var t0 = when || ctx.currentTime;
+      var osc = ctx.createOscillator();
+      var g = ctx.createGain();
+      osc.type = type || 'square';
+      osc.frequency.setValueAtTime(freq, t0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol || 0.08, t0 + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g).connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    },
+    click: function(){
+      this.tone(880 + Math.random() * 120, 0.04, 'square', 0.06);
+    },
+    spinTick: function(){
+      this.tone(120 + Math.random() * 80, 0.03, 'sawtooth', 0.035);
+    },
+    spinStart: function(){
+      var ctx = this.ensure();
+      if(!ctx) return;
+      var t0 = ctx.currentTime;
+      for(var i = 0; i < 6; i++){
+        this.tone(200 + i * 40, 0.05, 'triangle', 0.04, t0 + i * 0.04);
+      }
+    },
+    win: function(){
+      var ctx = this.ensure();
+      if(!ctx) return;
+      var notes = [523, 659, 784, 1047];
+      var t0 = ctx.currentTime;
+      notes.forEach(function(f, i){
+        MixAudio.tone(f, 0.22, 'sine', 0.12, t0 + i * 0.1);
+      });
+      this.tone(880, 0.35, 'triangle', 0.08, t0 + 0.45);
+    }
+  };
+
+  /* ── Vertical faders UI sync ── */
+  function syncFaderUI(input){
+    var track = input.closest('.vfader-track');
+    var thumb = track.querySelector('.vfader-thumb');
+    var fill = track.querySelector('.vfader-fill');
+    var min = +input.min, max = +input.max, val = +input.value;
+    var pct = (val - min) / (max - min);
+    var trackH = track.clientHeight - 24;
+    var bottom = 8 + pct * trackH;
+    thumb.style.bottom = bottom + 'px';
+    fill.style.height = (pct * trackH) + 'px';
+  }
+
+  function hsl(h){ return 'hsl(' + h + ', 100%, 55%)'; }
+
+  function updateFaderLabels(){
+    var neonEl = document.querySelector('[data-mix="neon"]');
+    var styleEl = document.querySelector('[data-mix="style"]');
+    var blurEl = document.querySelector('[data-mix="blur"]');
+    var themeEl = document.querySelector('[data-mix="theme"]');
+    var speedEl = document.querySelector('[data-mix="speed"]');
+    var glossEl = document.querySelector('[data-mix="gloss"]');
+    function setVal(key, text){
+      var el = document.querySelector('[data-val-for="' + key + '"]');
+      if(el) el.textContent = text;
+    }
+    if(neonEl) setVal('neon', neonEl.value + '%');
+    if(styleEl) setVal('style', STYLE_MODES[+styleEl.value] || 'Clean');
+    if(blurEl) setVal('blur', blurEl.value + '%');
+    if(themeEl) setVal('theme', COLOR_THEMES[+themeEl.value]?.name || 'Gold');
+    if(speedEl) setVal('speed', speedEl.value + '%');
+    if(glossEl) setVal('gloss', glossEl.value + '%');
+  }
+
+  function applyMixers(){
+    MixEngine.requestUpdate();
+  }
+
+  function resetMixers(){
+    document.body.classList.remove('festive-mode');
+    Object.keys(MIX_DEFAULTS).forEach(function(key){
+      var el = document.querySelector('[data-mix="' + key + '"]') || (key === 'crossfade' ? document.getElementById('styleCrossfade') : null);
+      if(el) el.value = MIX_DEFAULTS[key];
+    });
+    document.querySelectorAll('.vfader-range').forEach(syncFaderUI);
+    MixEngine.snap();
+    buildWires();
+    var slotMsg = document.getElementById('slotMsg');
+    if(slotMsg){
+      slotMsg.textContent = 'Потяните рычаг — будет интрига…';
+      slotMsg.classList.remove('win');
+    }
+  }
+
+  function bindFaderInput(inp){
+    var track = inp.closest('.vfader-track');
+    inp.addEventListener('pointerdown', function(){ track && track.classList.add('is-dragging'); });
+    inp.addEventListener('pointerup', function(){ track && track.classList.remove('is-dragging'); });
+    inp.addEventListener('pointercancel', function(){ track && track.classList.remove('is-dragging'); });
+    inp.addEventListener('input', function(){
+      syncFaderUI(inp);
+      MixAudio.click();
+      MixEngine.requestUpdate();
+    });
+    syncFaderUI(inp);
+  }
+
+  document.querySelectorAll('.vfader-range').forEach(bindFaderInput);
+  var crossfadeEl = document.getElementById('styleCrossfade');
+  if(crossfadeEl){
+    crossfadeEl.addEventListener('input', function(){
+      MixEngine.requestUpdate();
+    });
+  }
+  MixEngine.snap();
+
+  /* FPS counter */
+  (function(){
+    var fpsEl = document.getElementById('mixerFps');
+    if(!fpsEl) return;
+    var frames = 0, last = performance.now();
+    function loop(now){
+      frames++;
+      if(now - last >= 850){
+        var fps = Math.round(frames * 1000 / (now - last));
+        frames = 0;
+        last = now;
+        var gpu = MixEngine.lastGpuMs.toFixed(1);
+        fpsEl.textContent = '⚡ ' + fps + ' FPS | ' + gpu + 'ms GPU Render';
+      }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  })();
+
+  var mixerMuteBtn = document.getElementById('mixerMuteBtn');
+  if(mixerMuteBtn){
+    mixerMuteBtn.addEventListener('click', function(){
+      MixAudio.muted = !MixAudio.muted;
+      mixerMuteBtn.classList.toggle('is-muted', MixAudio.muted);
+      mixerMuteBtn.textContent = MixAudio.muted ? '🔇 Mute' : '🔊 Unmute';
+      mixerMuteBtn.setAttribute('aria-pressed', MixAudio.muted ? 'true' : 'false');
+      if(!MixAudio.muted) MixAudio.ensure();
+    });
+  }
+  document.getElementById('mixerResetBtn')?.addEventListener('click', resetMixers);
+
+  /* ── 2 side wires aligned to main container edges ── */
+  function getContainerEdges(shell){
+    var container = document.getElementById('contentRail') || document.querySelector('.content-layer .max-w-7xl');
+    if(!container) return { left: shell.offsetWidth * 0.04, right: shell.offsetWidth * 0.96 };
+    var shellRect = shell.getBoundingClientRect();
+    var contRect = container.getBoundingClientRect();
+    return {
+      left: Math.max(8, contRect.left - shellRect.left),
+      right: Math.min(shell.offsetWidth - 8, contRect.right - shellRect.left)
+    };
+  }
+
+  function buildWires(){
+    wirePathsG.innerHTML = '';
+    wireDotsG.innerHTML = '';
+    wireRoutes = [];
+    var shell = document.getElementById('siteShell');
+    var h = shell.offsetHeight, w = shell.offsetWidth;
+    wireMount.style.height = h + 'px';
+    wireSvg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+
+    var mixer = document.getElementById('mixerStage');
+    var footer = document.getElementById('siteFooter');
+    if(!mixer || !footer) return;
+
+    var mixR = mixer.getBoundingClientRect();
+    var mixY = mixR.top + window.scrollY + mixR.height * 0.5;
+    var footY = footer.offsetTop + 12;
+    var topY = 60;
+    var edges = getContainerEdges(shell);
+    var leftX = edges.left;
+    var rightX = edges.right;
+
+    var paths = [
+      'M ' + leftX + ' ' + topY + ' L ' + leftX + ' ' + mixY + ' L ' + leftX + ' ' + footY,
+      'M ' + rightX + ' ' + topY + ' L ' + rightX + ' ' + mixY + ' L ' + rightX + ' ' + footY
+    ];
+
+    paths.forEach(function(d){ addWire(d, 7); });
+    updateCurrentFromScroll();
+  }
+
+  function addWire(d, r){
+    var base = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    base.setAttribute('d', d); base.setAttribute('class', 'wire-base');
+    var glow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    glow.setAttribute('d', d); glow.setAttribute('class', 'wire-glow');
+    var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('r', r); dot.setAttribute('class', 'current-dot');
+    wirePathsG.appendChild(base); wirePathsG.appendChild(glow); wireDotsG.appendChild(dot);
+    wireRoutes.push({ path: base, dot: dot });
+  }
+
+  function updateCurrentFromScroll(){
+    var maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+    var speedEl = document.querySelector('[data-mix="speed"]');
+    var speedMult = 0.6 + (speedEl ? speedEl.value / 100 * 1.4 : 0.7);
+    var progress = Math.min(Math.max((window.scrollY / maxScroll) * speedMult, 0), 1);
+    wireRoutes.forEach(function(route, i){
+      var len = route.path.getTotalLength();
+      if(!len) return;
+      var t = ((progress + i * 0.06) % 1) * len;
+      var pt = route.path.getPointAtLength(t);
+      route.dot.setAttribute('cx', pt.x);
+      route.dot.setAttribute('cy', pt.y);
+    });
+  }
+
+  window.addEventListener('scroll', updateCurrentFromScroll, { passive: true });
+  window.addEventListener('resize', buildWires);
+  window.addEventListener('load', function(){ buildWires(); setTimeout(buildWires, 400); });
+
+  /* ── Scroll reveal ── */
+  var obs = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.section-reveal').forEach(function(el){ obs.observe(el); });
+
+  /* Footer — legal docs modal + email copy */
+  (function(){
+    var DOC_META = {
+      nda:      { filename: 'NDA_Template.pdf.md' },
+      contract: { filename: 'Service_Agreement.pdf.md' },
+      security: { filename: 'Tech_Stack_&_Architecture.md' }
+    };
+    var LEGAL_MD = window.WELDOR_LEGAL_DOCS || {};
+
+    function escHtml(s){
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function inlineMd(s){
+      var parts = escHtml(s).split(/\*\*/);
+      if(parts.length === 1) return parts[0];
+      var out = '';
+      for(var i = 0; i < parts.length; i++){
+        out += (i % 2 === 1) ? ('<strong>' + parts[i] + '</strong>') : parts[i];
+      }
+      return out;
+    }
+    function renderLegalMarkdown(md){
+      if(!md) return '';
+      var lines = md.replace(/\r\n/g, '\n').split('\n');
+      var html = [];
+      var inUl = false;
+      for(var i = 0; i < lines.length; i++){
+        var line = lines[i].trim();
+        if(!line){
+          if(inUl){ html.push('</ul>'); inUl = false; }
+          continue;
+        }
+        if(line.indexOf('## ') === 0){
+          if(inUl){ html.push('</ul>'); inUl = false; }
+          html.push('<h3 class="wdz-legal-h">' + inlineMd(line.slice(3)) + '</h3>');
+        } else if(line.indexOf('- ') === 0){
+          if(!inUl){ html.push('<ul class="wdz-legal-ul">'); inUl = true; }
+          html.push('<li>' + inlineMd(line.slice(2)) + '</li>');
+        } else if(line.indexOf('> ') === 0){
+          if(inUl){ html.push('</ul>'); inUl = false; }
+          html.push('<blockquote class="wdz-legal-quote">' + inlineMd(line.slice(2)) + '</blockquote>');
+        } else if(line.charAt(0) === '\u00AB'){
+          if(inUl){ html.push('</ul>'); inUl = false; }
+          html.push('<blockquote class="wdz-legal-quote">' + inlineMd(line.replace(/^\*\*|\*\*$/g, '')) + '</blockquote>');
+        } else {
+          if(inUl){ html.push('</ul>'); inUl = false; }
+          html.push('<p>' + inlineMd(line) + '</p>');
+        }
+      }
+      if(inUl) html.push('</ul>');
+      return html.join('');
+    }
+
+    var docModal = document.getElementById('footerDocModal');
+    var docBody = document.getElementById('footerDocBody');
+    var docDownload = document.getElementById('footerDocDownload');
+    var docAgree = document.getElementById('footerDocAgree');
+    var docAccept = document.getElementById('footerDocAccept');
+    var docTabs = document.querySelectorAll('.wdz-legal-tab');
+    var activeKey = 'nda';
+
+    function setActiveTab(key){
+      if(!LEGAL_MD[key]) return;
+      activeKey = key;
+      docTabs.forEach(function(tab){
+        tab.classList.toggle('on', tab.getAttribute('data-doc') === key);
+      });
+      if(docBody){
+        docBody.innerHTML = renderLegalMarkdown(LEGAL_MD[key]);
+        docBody.scrollTop = 0;
+      }
+    }
+
+    function syncAcceptBtn(){
+      if(!docAccept || !docAgree) return;
+      docAccept.disabled = !docAgree.checked;
+    }
+
+    function resetAgree(){
+      if(docAgree) docAgree.checked = false;
+      syncAcceptBtn();
+    }
+
+    function openDoc(key){
+      if(!docModal) return;
+      var docKey = LEGAL_MD[key] ? key : 'nda';
+      resetAgree();
+      setActiveTab(docKey);
+      docModal.classList.add('open');
+      docModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      docBody && docBody.focus();
+    }
+
+    function closeDoc(){
+      if(!docModal) return;
+      docModal.classList.remove('open');
+      docModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      resetAgree();
+    }
+
+    function downloadDoc(){
+      var md = LEGAL_MD[activeKey];
+      var meta = DOC_META[activeKey];
+      if(!md || !meta) return;
+      var blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = meta.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    docTabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        setActiveTab(tab.getAttribute('data-doc'));
+      });
+    });
+
+    document.querySelectorAll('.footer-doc-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        openDoc(btn.getAttribute('data-doc'));
+      });
+    });
+
+    docAgree && docAgree.addEventListener('change', syncAcceptBtn);
+    docAccept && docAccept.addEventListener('click', function(){
+      if(!docAgree || !docAgree.checked) return;
+      closeDoc();
+    });
+    docDownload && docDownload.addEventListener('click', downloadDoc);
+
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && docModal && docModal.classList.contains('open')) e.preventDefault();
+    });
+
+    setActiveTab('nda');
+    window.WELDOR_openLegalDoc = openDoc;
+
+    var emailBtn = document.getElementById('footerCopyEmail');
+    var emailToast = document.getElementById('footerEmailToast');
+    var emailToastTimer = null;
+    if(emailBtn){
+      emailBtn.addEventListener('click', function(){
+        var email = emailBtn.getAttribute('data-email') || 'weldor.space@gmail.com';
+        navigator.clipboard.writeText(email).then(function(){
+          emailBtn.classList.add('copied');
+          emailBtn.innerHTML = '<i class="fa-solid fa-check"></i> Email скопирован!';
+          if(emailToast){
+            emailToast.classList.add('show');
+            if(emailToastTimer) clearTimeout(emailToastTimer);
+            emailToastTimer = setTimeout(function(){ emailToast.classList.remove('show'); }, 2200);
+          }
+          setTimeout(function(){
+            emailBtn.classList.remove('copied');
+            emailBtn.innerHTML = '<i class="fa-regular fa-envelope"></i> Скопировать Email';
+          }, 1800);
+        }).catch(function(){});
+      });
+    }
+  })();
+
+  /* FAQ floating widget */
+  (function(){
+    var widget = document.getElementById('faqWidget');
+    var fab = document.getElementById('faqFab');
+    var panel = document.getElementById('faqPanel');
+    if(!widget || !fab) return;
+
+    function setOpen(open){
+      widget.classList.toggle('open', open);
+      fab.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if(panel) panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+      fab.textContent = open ? '✕' : '❓';
+    }
+
+    fab.addEventListener('click', function(e){
+      e.stopPropagation();
+      setOpen(!widget.classList.contains('open'));
+    });
+
+    document.addEventListener('click', function(e){
+      if(!widget.classList.contains('open')) return;
+      if(widget.contains(e.target)) return;
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && widget.classList.contains('open')) setOpen(false);
+    });
+
+    document.querySelectorAll('.faq-doc-link').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        setOpen(false);
+        if(typeof window.WELDOR_openLegalDoc === 'function'){
+          window.WELDOR_openLegalDoc(btn.getAttribute('data-doc') || 'nda');
+        }
+      });
+    });
+  })();
+
+  /* Hero status modal */
+  var statusBtn = document.getElementById('heroStatusBtn');
+  var statusModal = document.getElementById('heroStatusModal');
+  var modalBackdrop = document.getElementById('heroModalBackdrop');
+  var modalClose = document.getElementById('heroModalClose');
+  function openHeroModal(){
+    statusModal.classList.add('open');
+    statusModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeHeroModal(){
+    statusModal.classList.remove('open');
+    statusModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  if(statusBtn && statusModal){
+    statusBtn.addEventListener('click', openHeroModal);
+    modalBackdrop && modalBackdrop.addEventListener('click', closeHeroModal);
+    modalClose && modalClose.addEventListener('click', closeHeroModal);
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && statusModal.classList.contains('open')) closeHeroModal();
+      if(e.key === 'Escape' && jackpotModal && jackpotModal.classList.contains('open')) closeJackpotModal();
+    });
+  }
+
+  /* ── Slot reels ── */
+  function buildStrip(reelEl){
+    reelEl.innerHTML = '';
+    var strip = document.createElement('div');
+    strip.className = 'reel-strip';
+    var seq = [];
+    for(var r = 0; r < 8; r++){
+      SYMBOLS.forEach(function(s){ seq.push(s); });
+    }
+    seq.forEach(function(s){
+      var cell = document.createElement('div');
+      cell.className = 'reel-symbol';
+      cell.textContent = s;
+      strip.appendChild(cell);
+    });
+    reelEl.appendChild(strip);
+    return strip;
+  }
+
+  var strips = [
+    buildStrip(document.getElementById('reel1')),
+    buildStrip(document.getElementById('reel2')),
+    buildStrip(document.getElementById('reel3'))
+  ];
+
+  function indexOfSymbol(strip, sym, nearEnd){
+    var cells = strip.children;
+    var start = nearEnd ? Math.max(0, cells.length - SYMBOLS.length * 3) : 0;
+    for(var i = start; i < cells.length; i++){
+      if(cells[i].textContent === sym) return i;
+    }
+    return cells.length - SYMBOLS.length;
+  }
+
+  function spinTo(strip, sym, duration, easing, done){
+    var idx = indexOfSymbol(strip, sym, true);
+    var offset = idx * SYM_H;
+    strip.style.transition = 'transform ' + duration + 'ms ' + (easing || 'cubic-bezier(0.15, 0.85, 0.2, 1)');
+    strip.style.transform = 'translateY(-' + offset + 'px)';
+    setTimeout(done || function(){}, duration);
+  }
+
+  function flashSymbols(strip, duration, interval, done){
+    var cells = strip.children;
+    var t0 = Date.now();
+    var timer = setInterval(function(){
+      var i = Math.floor(Math.random() * cells.length);
+      strip.style.transform = 'translateY(-' + (i * SYM_H) + 'px)';
+      strip.style.transition = 'transform 0.06s linear';
+      if(Date.now() - t0 >= duration){ clearInterval(timer); done(); }
+    }, interval);
+  }
+
+  var lever = document.getElementById('slotLever');
+  var slotMsg = document.getElementById('slotMsg');
+  var jackpotModal = document.getElementById('jackpotModal');
+  var spinning = false;
+  var spinTickTimer = null;
+
+  function openJackpotModal(){
+    if(!jackpotModal) return;
+    jackpotModal.classList.add('open');
+    jackpotModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeJackpotModal(){
+    if(!jackpotModal) return;
+    jackpotModal.classList.remove('open');
+    jackpotModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  ['jackpotModalClose','jackpotModalBackdrop'].forEach(function(id){
+    document.getElementById(id)?.addEventListener('click', closeJackpotModal);
+  });
+  document.getElementById('jackpotTgBtn')?.addEventListener('click', function(e){
+    e.preventDefault();
+    var msg = 'Привет! Выбил промокод ' + PROMO_CODE + ' на weldor.space — хочу обсудить скидку/бота!';
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(PROMO_CODE).catch(function(){});
+    }
+    window.open('https://t.me/Iamveldor?text=' + encodeURIComponent(msg), '_blank', 'noopener,noreferrer');
+    closeJackpotModal();
+  });
+
+  function fireConfetti(){
+    if(typeof confetti !== 'function') return;
+    var colors = ['#FFD700', '#FF3366', '#00FF66', '#A855F7', '#EF4444'];
+    confetti({ particleCount: 120, spread: 78, origin: { y: 0.62 }, colors: colors });
+    setTimeout(function(){
+      confetti({ particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: colors });
+      confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: colors });
+    }, 280);
+  }
+
+  lever.addEventListener('click', function(){
+    if(spinning) return;
+    spinning = true;
+    lever.classList.add('pulled');
+    slotMsg.textContent = 'Крутим… держись';
+    slotMsg.classList.remove('win');
+    MixAudio.spinStart();
+    spinTickTimer = setInterval(function(){ MixAudio.spinTick(); }, 90);
+    setTimeout(function(){ lever.classList.remove('pulled'); }, 500);
+
+    strips.forEach(function(s){ s.style.transition = 'none'; s.style.transform = 'translateY(0)'; });
+
+    /* Reel 1 — быстро на 7️⃣ */
+    flashSymbols(strips[0], 500, 70, function(){
+      spinTo(strips[0], '7️⃣', 400, 'cubic-bezier(0.2, 1, 0.3, 1)');
+    });
+
+    /* Reel 2 — чуть дольше */
+    flashSymbols(strips[1], 900, 65, function(){
+      spinTo(strips[1], '7️⃣', 600, 'cubic-bezier(0.15, 0.9, 0.25, 1)');
+    });
+
+    /* Reel 3 — долгая интрига: пролетает 🍌 и 🍒, в конце 7️⃣ */
+    var s3 = strips[2];
+    var t = 0;
+    var intriga = setInterval(function(){
+      t += 80;
+      if(t < 1800){
+        s3.style.transition = 'transform 0.07s linear';
+        var r = Math.floor(Math.random() * s3.children.length);
+        s3.style.transform = 'translateY(-' + (r * SYM_H) + 'px)';
+      } else if(t === 1840){
+        s3.style.transition = 'transform 0.15s ease-out';
+        var iBan = indexOfSymbol(s3, '🍌', true);
+        s3.style.transform = 'translateY(-' + (iBan * SYM_H) + 'px)';
+      } else if(t === 1960){
+        s3.style.transition = 'transform 0.12s ease-out';
+        var iCher = indexOfSymbol(s3, '🍒', true);
+        s3.style.transform = 'translateY(-' + (iCher * SYM_H) + 'px)';
+      } else if(t >= 2100){
+        clearInterval(intriga);
+        spinTo(s3, '7️⃣', 350, 'cubic-bezier(0.05, 0.95, 0.1, 1)', function(){
+          spinning = false;
+          if(spinTickTimer){ clearInterval(spinTickTimer); spinTickTimer = null; }
+          slotMsg.textContent = '🎰 JACKPOT! 7️⃣ · 7️⃣ · 7️⃣ — праздничный ток!';
+          slotMsg.classList.add('win');
+          document.body.classList.add('festive-mode');
+          MixAudio.win();
+          fireConfetti();
+          openJackpotModal();
+          jackpotFaders();
+        });
+      }
+    }, 80);
+  });
+
+  function jackpotFaders(){
+    var map = { neon: 100, style: 2, blur: 15, theme: 0, gloss: 100 };
+    Object.keys(map).forEach(function(key){
+      var el = document.querySelector('[data-mix="' + key + '"]');
+      if(!el) return;
+      var start = +el.value, end = map[key], t0 = null;
+      function step(ts){
+        if(!t0) t0 = ts;
+        var p = Math.min((ts - t0) / 1300, 1);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.value = Math.round(start + (end - start) * e);
+        syncFaderUI(el);
+        applyMixers();
+        if(p < 1) requestAnimationFrame(step);
+        else buildWires();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* IDE — VS Code demo */
+  (function(){
+    var IDE_TS = {
+      'order-validation.ts':
+        '// order-validation.ts — проверка безопасности и хэша\n' +
+        'import { createHmac, timingSafeEqual } from \'crypto\';\n\n' +
+        'export async function validateOrder(payload: OrderPayload) {\n' +
+        '  const body = JSON.stringify(payload.data);\n' +
+        '  const sig = createHmac(\'sha256\', SECRET).update(body).digest(\'hex\');\n' +
+        '  if (!timingSafeEqual(Buffer.from(sig), Buffer.from(payload.hash))) {\n' +
+        '    throw new Error(\'Invalid SHA-256 signature\');\n' +
+        '  }\n' +
+        '  return { valid: true, latencyMs: 12 };\n' +
+        '}',
+      'kaspi-pay-integration.ts':
+        '// kaspi-pay-integration.ts — Kaspi Pay API\n' +
+        'import { KaspiClient } from \'@/lib/kaspi\';\n\n' +
+        'export async function createPayment(orderId: string, amount: number) {\n' +
+        '  const client = new KaspiClient({ merchantId: MERCHANT_ID });\n' +
+        '  const res = await client.charge({ orderId, amount, currency: \'KZT\' });\n' +
+        '  if (res.status !== \'SUCCESS\') throw new Error(\'Kaspi declined\');\n' +
+        '  return { txnId: res.transactionId, paid: true };\n' +
+        '}',
+      'audio-stream-engine.ts':
+        '// audio-stream-engine.ts — DSP аудио-поток\n' +
+        'export class AudioStreamEngine {\n' +
+        '  private ctx: AudioContext;\n' +
+        '  private analyser: AnalyserNode;\n\n' +
+        '  constructor() {\n' +
+        '    this.ctx = new AudioContext();\n' +
+        '    this.analyser = this.ctx.createAnalyser();\n' +
+        '    this.analyser.fftSize = 256;\n' +
+        '  }\n\n' +
+        '  connectSource(node: AudioNode) {\n' +
+        '    node.connect(this.analyser).connect(this.ctx.destination);\n' +
+        '  }\n' +
+        '}'
+    };
+
+    var IDE_TILDA = {
+      'order-validation.ts': buildTildaSpaghetti('order-block'),
+      'kaspi-pay-integration.ts': buildTildaSpaghetti('kaspi-widget'),
+      'audio-stream-engine.ts': buildTildaSpaghetti('audio-zerocode')
+    };
+
+    function buildTildaSpaghetti(blockId){
+      var lines = [
+        '<!-- Tilda export | block: ' + blockId + ' | 847 nodes | 2.4 MB -->',
+        '<div id="allrecords" class="t-records" data-tilda-project="4829103">',
+        '  <div class="r t-rec t-rec_pt_120" data-record-type="396">',
+        '    <div class="t396">',
+        '      <div class="t396__artboard" data-artboard-height="900">'
+      ];
+      for(var d = 0; d < 18; d++){
+        lines.push('        <div class="t396__elem tn-elem" data-elem-id="' + d + '" style="z-index:' + d + '">');
+        lines.push('          <div class="tn-atom" field="title" style="opacity:0.99">');
+        lines.push('            <div class="t-div' + d + '"><div class="t-div' + d + '__inner">');
+        lines.push('              <div class="t-container"><div class="t-row"><div class="t-col">');
+        lines.push('                <div class="t-wrapper"><span class="t-tildalabel">INLINE STYLE #' + d + '</span></div>');
+        lines.push('              </div></div></div></div></div></div></div>');
+      }
+      lines.push('      </div></div></div></div>');
+      lines.push('<!-- Zero-Code™ · PageSpeed: 34/100 · 847 nested divs -->');
+      return lines.join('\n');
+    }
+
+    var ta = document.getElementById('ideTa');
+    var hl = document.getElementById('ideHl') && document.getElementById('ideHl').querySelector('code');
+    var tabName = document.getElementById('ideTabName');
+    var ideStack = document.getElementById('ideStack');
+    var ideExplorer = document.getElementById('ideExplorer');
+    var panelExt = document.getElementById('p-ext');
+    var terminal = document.getElementById('ideTerminal');
+    var terminalBody = document.getElementById('ideTerminalBody');
+    var ideWindow = document.getElementById('ideWindow');
+    var deployToast = document.getElementById('ideDeployToast');
+    if(!ta || !hl) return;
+
+    var currentFile = 'order-validation.ts';
+    var ideMode = 'ts';
+
+    function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function highlight(code){
+      if(ideMode === 'tilda'){
+        return esc(code)
+          .replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="tk-cm">$1</span>')
+          .replace(/(&lt;\/?[\w-]+)/g,'<span class="tk-tag">$1</span>')
+          .replace(/(field="[^"]*")/g,'<span class="tk-str">$1</span>')
+          .replace(/(data-[\w-]+="[^"]*")/g,'<span class="tk-str">$1</span>');
+      }
+      return esc(code)
+        .replace(/(\/\/[^\n]*)/g,'<span class="tk-cm">$1</span>')
+        .replace(/('[^']*'|"[^"]*")/g,'<span class="tk-str">$1</span>')
+        .replace(/\b(createHmac|timingSafeEqual|validateOrder|createPayment|connectSource|JSON\.stringify|digest|update|charge)\b/g,'<span class="tk-fn">$1</span>')
+        .replace(/\b(import|export|async|function|class|constructor|private|from|return|throw|new|if|const|let)\b/g,'<span class="tk-kw">$1</span>')
+        .replace(/\b(true|false|null)\b/g,'<span class="tk-num">$1</span>')
+        .replace(/\b(string|number|boolean|OrderPayload|AudioContext|AnalyserNode|AudioNode)\b/g,'<span class="tk-type">$1</span>');
+    }
+
+    function getSource(name){ return (ideMode === 'tilda' ? IDE_TILDA : IDE_TS)[name] || ''; }
+
+    function setCode(name, animate){
+      var src = getSource(name);
+      if(animate){
+        ideStack.classList.add('is-switching');
+        setTimeout(function(){
+          ta.value = src;
+          hl.innerHTML = highlight(src) + '\n';
+          ta.scrollTop = 0;
+          document.getElementById('ideHl').scrollTop = 0;
+          ideStack.classList.remove('is-switching');
+        }, 180);
+      } else {
+        ta.value = src;
+        hl.innerHTML = highlight(src) + '\n';
+      }
+      currentFile = name;
+      if(tabName) tabName.textContent = name;
+      document.querySelectorAll('.ide-file').forEach(function(btn){
+        btn.classList.toggle('on', btn.getAttribute('data-file') === name);
+      });
+    }
+
+    function syncHl(){
+      hl.innerHTML = highlight(ta.value) + '\n';
+    }
+
+    ta.addEventListener('input', syncHl);
+    ta.addEventListener('scroll', function(){
+      document.getElementById('ideHl').scrollLeft = ta.scrollLeft;
+      document.getElementById('ideHl').scrollTop = ta.scrollTop;
+    });
+
+    document.querySelectorAll('.ide-file').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var file = btn.getAttribute('data-file');
+        if(file && file !== currentFile) setCode(file, true);
+      });
+    });
+
+    document.querySelectorAll('.ide-mode-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.ide-mode-btn').forEach(function(b){ b.classList.remove('on'); });
+        btn.classList.add('on');
+        ideMode = btn.getAttribute('data-ide-mode');
+        setCode(currentFile, true);
+      });
+    });
+
+    document.querySelectorAll('.ide-sbtn').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.querySelectorAll('.ide-sbtn').forEach(function(x){ x.classList.remove('on'); });
+        b.classList.add('on');
+        var panel = b.getAttribute('data-p');
+        if(ideExplorer) ideExplorer.style.display = panel === 'files' ? 'flex' : 'none';
+        if(panelExt) panelExt.classList.toggle('on', panel === 'ext');
+      });
+    });
+
+    document.getElementById('ideCopyBtn')?.addEventListener('click', function(){
+      var btn = document.getElementById('ideCopyBtn');
+      navigator.clipboard.writeText(ta.value).then(function(){
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.classList.remove('copied'); }, 1400);
+      }).catch(function(){});
+    });
+
+    document.getElementById('ideRunBtn')?.addEventListener('click', function(){
+      var runBtn = document.getElementById('ideRunBtn');
+      if(ideMode === 'tilda'){
+        terminalBody.innerHTML = '<span class="ide-terminal__line">&gt; Executing ' + esc(currentFile) + '...</span>\n' +
+          '<span class="ide-terminal__line">[WARN] 847 nested divs detected</span>\n' +
+          '<span class="ide-terminal__line">[FAIL] PageSpeed 34/100 · Use TypeScript instead</span>';
+        terminal.classList.add('open');
+        return;
+      }
+      runBtn.classList.add('running');
+      terminal.classList.add('open');
+      terminalBody.innerHTML = '<span class="ide-terminal__line">&gt; Executing ' + esc(currentFile) + '...</span>';
+      setTimeout(function(){
+        terminalBody.innerHTML += '\n<span class="ide-terminal__line--ok">[SUCCESS] SHA-256 Validated | Kaspi API Connected | Time: 12ms</span>';
+        runBtn.classList.remove('running');
+      }, 720);
+    });
+
+    document.getElementById('ideClose')?.addEventListener('click', function(){
+      ideWindow.classList.add('ide-closed');
+      deployToast.classList.add('show');
+    });
+    document.getElementById('ideRestoreBtn')?.addEventListener('click', function(){
+      ideWindow.classList.remove('ide-closed');
+      deployToast.classList.remove('show');
+    });
+
+    setCode('order-validation.ts', false);
+  })();
+
+  /* Calculator — Cursor Speed */
+  (function(){
+    var TG_BASE = 'https://t.me/Iamveldor';
+    var MAX_DAYS = 14;
+
+    var PROJECTS = {
+      landing: { icon: '🌐', label: 'Landing / Промо', daysMin: 1, daysMax: 3, budget: 80000 },
+      shop:    { icon: '🛒', label: 'Магазин / Витрина', daysMin: 3, daysMax: 5, budget: 220000 },
+      webapp:  { icon: '📱', label: 'Web App / Сервис', daysMin: 3, daysMax: 7, budget: 320000 },
+      tgapp:   { icon: '🤖', label: 'Telegram Web App', daysMin: 4, daysMax: 6, budget: 180000 },
+      saas:    { icon: '🎛️', label: 'SaaS Платформа', daysMin: 7, daysMax: 12, budget: 480000 }
+    };
+
+    var ADDONS = [
+      { id: 'chkKaspi', label: 'Kaspi Pay / Онлайн-оплата', budget: 60000, days: 1 },
+      { id: 'chkTg', label: 'Telegram Auth / Авторизация', budget: 40000, days: 1 },
+      { id: 'chkDash', label: 'Личный кабинет пользователя', budget: 80000, days: 1 },
+      { id: 'chkAdmin', label: 'Панель администратора / Дашборд', budget: 70000, days: 1 },
+      { id: 'chkAi', label: 'Интеграция AI / Chat-GPT', budget: 90000, days: 2 },
+      { id: 'chkLang', label: 'Мультиязычность UI', budget: 30000, days: 1 }
+    ];
+
+    var currentProject = 'landing';
+    var display = { budget: 80000, daysMin: 1, daysMax: 3 };
+    var countAnimId = null;
+    var timeEl = document.getElementById('timeVal');
+    var budgetEl = document.getElementById('budgetVal');
+    var compareEl = document.getElementById('calcCompareDays');
+    var tgBtn = document.getElementById('calcTgBtn');
+
+    function dayWord(n){
+      var m10 = n % 10, m100 = n % 100;
+      if(m100 >= 11 && m100 <= 19) return n + ' дней';
+      if(m10 === 1) return n + ' день';
+      if(m10 >= 2 && m10 <= 4) return n + ' дня';
+      return n + ' дней';
+    }
+
+    function formatRange(minD, maxD){
+      if(minD === maxD) return dayWord(minD);
+      return minD + '–' + maxD + ' ' + (maxD === 1 ? 'день' : (maxD >= 2 && maxD <= 4 ? 'дня' : 'дней'));
+    }
+
+    function getSelectedAddons(){
+      return ADDONS.filter(function(a){
+        var el = document.getElementById(a.id);
+        return el && el.checked;
+      });
+    }
+
+    function calcState(){
+      var p = PROJECTS[currentProject];
+      var addons = getSelectedAddons();
+      var addonDays = addons.reduce(function(s, a){ return s + a.days; }, 0);
+      var addonBudget = addons.reduce(function(s, a){ return s + a.budget; }, 0);
+      var daysMin = p.daysMin;
+      var daysMax = Math.min(MAX_DAYS, p.daysMax + addonDays);
+      if(daysMin > daysMax) daysMin = daysMax;
+      return {
+        project: p,
+        addons: addons,
+        daysMin: daysMin,
+        daysMax: daysMax,
+        budget: p.budget + addonBudget,
+        rangeText: formatRange(daysMin, daysMax)
+      };
+    }
+
+    function buildTelegramMessage(state){
+      var lines = [
+        '📋 Заявка с weldor.space',
+        '',
+        '🎯 Тип: ' + state.project.icon + ' ' + state.project.label,
+        '⏱ Сроки: ' + state.rangeText,
+        '💰 Бюджет: от ' + state.budget.toLocaleString('ru-RU') + ' ₸',
+        '',
+        '✅ Опции:'
+      ];
+      if(!state.addons.length){
+        lines.push('• Базовая конфигурация');
+      } else {
+        state.addons.forEach(function(a){
+          lines.push('• ' + a.label + ' (+' + a.budget.toLocaleString('ru-RU') + ' ₸)');
+        });
+      }
+      lines.push('');
+      lines.push('⚡ Cursor AI + Clean Architecture');
+      lines.push('🔗 weldor.space');
+      return lines.join('\n');
+    }
+
+    function updateTelegram(state){
+      if(tgBtn) tgBtn.href = TG_BASE + '?text=' + encodeURIComponent(buildTelegramMessage(state));
+    }
+
+    function setDisplayUI(daysMin, daysMax, budget, tick){
+      if(timeEl){
+        timeEl.textContent = formatRange(daysMin, daysMax);
+        timeEl.classList.toggle('is-ticking', tick);
+      }
+      if(budgetEl){
+        budgetEl.textContent = budget.toLocaleString('ru-RU') + ' ₸';
+        budgetEl.classList.toggle('is-ticking', tick);
+      }
+      if(compareEl) compareEl.textContent = daysMin + '–' + daysMax + ' дней ✅';
+    }
+
+    function animateRender(state){
+      if(countAnimId) cancelAnimationFrame(countAnimId);
+      var startB = display.budget, startMin = display.daysMin, startMax = display.daysMax;
+      var endB = state.budget, endMin = state.daysMin, endMax = state.daysMax;
+      var t0 = null, dur = 480;
+
+      setDisplayUI(startMin, startMax, startB, true);
+
+      function step(ts){
+        if(!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var e = 1 - Math.pow(1 - p, 3);
+        display.budget = Math.round(startB + (endB - startB) * e);
+        display.daysMin = Math.round(startMin + (endMin - startMin) * e);
+        display.daysMax = Math.round(startMax + (endMax - startMax) * e);
+        if(display.daysMin > display.daysMax) display.daysMin = display.daysMax;
+        setDisplayUI(display.daysMin, display.daysMax, display.budget, p < 1);
+        if(p < 1){
+          countAnimId = requestAnimationFrame(step);
+        } else {
+          display.budget = endB;
+          display.daysMin = endMin;
+          display.daysMax = endMax;
+          setDisplayUI(endMin, endMax, endB, false);
+          updateTelegram(state);
+          countAnimId = null;
+        }
+      }
+      countAnimId = requestAnimationFrame(step);
+    }
+
+    function render(instant){
+      var state = calcState();
+      if(instant){
+        display.budget = state.budget;
+        display.daysMin = state.daysMin;
+        display.daysMax = state.daysMax;
+        setDisplayUI(state.daysMin, state.daysMax, state.budget, false);
+        updateTelegram(state);
+        return;
+      }
+      animateRender(state);
+    }
+
+    document.querySelectorAll('.calc-project-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        currentProject = card.getAttribute('data-project');
+        document.querySelectorAll('.calc-project-card').forEach(function(c){ c.classList.remove('on'); });
+        card.classList.add('on');
+        render();
+      });
+    });
+
+    ADDONS.forEach(function(a){
+      var el = document.getElementById(a.id);
+      el && el.addEventListener('change', function(){ render(); });
+    });
+
+    render(true);
+  })();
+  updateCurrentFromScroll();
+
+  /* Broken Code — 3D tilt */
+  (function(){
+    var card = document.getElementById('brokenCodeCard');
+    if(!card) return;
+    var inner = card.querySelector('.broken-code-card__inner');
+    if(!inner) return;
+    card.addEventListener('mousemove', function(e){
+      var r = card.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      inner.style.transform = 'rotateY(' + (x * 20).toFixed(2) + 'deg) rotateX(' + (-y * 20).toFixed(2) + 'deg) scale3d(1.03,1.03,1.03)';
+    });
+    card.addEventListener('mouseleave', function(){
+      inner.style.transform = '';
+    });
+  })();
+
+  /* Aurora OS simulator */
+  (function(){
+    var YOUTUBE_URL = 'https://www.youtube.com/@Weldor';
+    var bankWindow = document.getElementById('bankWindow');
+    var auroraDesktop = document.getElementById('auroraDesktop');
+    var bankCloseBtn = document.getElementById('bankCloseBtn');
+    var auroraTaskBank = document.getElementById('auroraTaskBank');
+    var auroraStartBtn = document.getElementById('auroraStartBtn');
+    var auroraToastStack = document.getElementById('auroraToastStack');
+    var auroraClock = document.getElementById('auroraClock');
+    var kineticModal = document.getElementById('kineticDawModal');
+    if(!bankWindow || !auroraDesktop) return;
+
+    var bankOpen = true;
+
+    function showAuroraToast(msg){
+      if(!auroraToastStack) return;
+      var el = document.createElement('div');
+      el.className = 'aurora-toast';
+      el.textContent = msg;
+      auroraToastStack.appendChild(el);
+      setTimeout(function(){ el.remove(); }, 3000);
+    }
+
+    function syncAuroraState(){
+      bankWindow.classList.toggle('bank-browser-win--minimized', !bankOpen);
+      auroraDesktop.classList.toggle('aurora-desktop--active', !bankOpen);
+      auroraDesktop.setAttribute('aria-hidden', bankOpen ? 'true' : 'false');
+      if(auroraTaskBank){
+        auroraTaskBank.hidden = bankOpen;
+        auroraTaskBank.classList.toggle('aurora-task-btn--visible', !bankOpen);
+        auroraTaskBank.classList.toggle('aurora-task-btn--active', !bankOpen);
+      }
+    }
+
+    function openBank(){
+      bankOpen = true;
+      syncAuroraState();
+    }
+
+    function minimizeBank(){
+      bankOpen = false;
+      syncAuroraState();
+    }
+
+    function openKineticModal(){
+      if(!kineticModal) return;
+      kineticModal.classList.add('open');
+      kineticModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeKineticModal(){
+      if(!kineticModal) return;
+      kineticModal.classList.remove('open');
+      kineticModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function tickClock(){
+      if(!auroraClock) return;
+      var now = new Date();
+      var timeEl = auroraClock.querySelector('.aurora-clock__time');
+      var dateEl = auroraClock.querySelector('.aurora-clock__date');
+      if(timeEl){
+        timeEl.textContent = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      }
+      if(dateEl){
+        dateEl.textContent = now.toLocaleDateString('ru-RU', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+      }
+    }
+
+    bankCloseBtn && bankCloseBtn.addEventListener('click', minimizeBank);
+    auroraTaskBank && auroraTaskBank.addEventListener('click', openBank);
+    auroraStartBtn && auroraStartBtn.addEventListener('click', function(){
+      showAuroraToast('Aurora OS · Weldor Edition');
+    });
+
+    document.querySelectorAll('[data-aurora-action]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var action = btn.getAttribute('data-aurora-action');
+        if(action === 'bank') openBank();
+        else if(action === 'doyuz'){
+          var doyuz = document.getElementById('doyuz');
+          if(doyuz) doyuz.scrollIntoView({ behavior:'smooth', block:'start' });
+        }
+        else if(action === 'daw'){
+          showAuroraToast('Запуск Kinetic DAW Engine...');
+          setTimeout(openKineticModal, 450);
+        }
+        else if(action === 'youtube'){
+          window.open(YOUTUBE_URL, '_blank', 'noopener,noreferrer');
+        }
+      });
+    });
+
+    ['kineticModalClose','kineticModalBackdrop','kineticModalDismiss'].forEach(function(id){
+      var el = document.getElementById(id);
+      el && el.addEventListener('click', closeKineticModal);
+    });
+    document.getElementById('kineticModalGo')?.addEventListener('click', function(){
+      closeKineticModal();
+      setTimeout(function(){
+        document.getElementById('control-center')?.scrollIntoView({ behavior:'smooth', block:'start' });
+      }, 120);
+    });
+
+    tickClock();
+    setInterval(tickClock, 1000);
+    syncAuroraState();
+  })();
+
+  /* Hide scrollbars inside project iframes (same-origin) */
+  var SCROLL_HIDE = 'html,body{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none;width:0;height:0}';
+  document.querySelectorAll('.device-iframe').forEach(function(frame){
+    function hideScroll(){
+      try{
+        var doc = frame.contentDocument || frame.contentWindow.document;
+        if(!doc || !doc.head) return;
+        if(!doc.getElementById('wz-scroll-hide')){
+          var style = doc.createElement('style');
+          style.id = 'wz-scroll-hide';
+          style.textContent = SCROLL_HIDE;
+          doc.head.appendChild(style);
+        }
+      }catch(e){}
+    }
+    frame.addEventListener('load', hideScroll);
+    if(frame.contentDocument && frame.contentDocument.readyState === 'complete') hideScroll();
+  });
+})();
+</script>
+</body>
+</html>
