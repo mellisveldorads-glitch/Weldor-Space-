@@ -50,10 +50,10 @@
     body.plain-template .wire-glow{opacity:calc(.08 + var(--crossfade)*.35)}
     body.plain-template .current-dot{opacity:calc(.15 + var(--crossfade)*.85)}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth;overflow-x:clip}
-    body{font-family:Inter,system-ui,sans-serif;background:var(--graphite);color:#fff;overflow-x:clip}
+    html{scroll-behavior:smooth;max-width:100vw;overflow-x:hidden}
+    body{font-family:Inter,system-ui,sans-serif;background:var(--graphite);color:#fff;max-width:100vw;overflow-x:hidden}
 
-    #siteShell{position:relative;min-height:100vh}
+    #siteShell{position:relative;min-height:100vh;max-width:100vw;overflow-x:hidden}
     #wireMount{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:1}
     #wireSvg{width:100%;height:100%;display:block}
     .wire-base{fill:none;stroke:#2a2d35;stroke-width:5;stroke-linecap:round}
@@ -73,7 +73,22 @@
       border:1px solid rgba(255,255,255,.1);border-radius:1rem;
       padding:.75rem 1.5rem;box-shadow:0 10px 30px rgba(0,0,0,.5);
     }
-    .site-navbar__inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%}
+    .site-navbar__inner{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;min-width:0}
+    .site-navbar__actions{display:flex;align-items:center;gap:.45rem;flex-shrink:0}
+    .site-nav-toggle{
+      display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;
+      width:38px;height:38px;padding:8px;border-radius:10px;flex-shrink:0;
+      border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);
+      cursor:pointer;color:#fff;
+    }
+    .site-nav-toggle__bar{display:block;width:18px;height:2px;background:currentColor;border-radius:2px;transition:transform .25s ease,opacity .25s ease}
+    .site-navbar.is-open .site-nav-toggle__bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .site-navbar.is-open .site-nav-toggle__bar:nth-child(2){opacity:0}
+    .site-navbar.is-open .site-nav-toggle__bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .site-nav-mobile{display:none;flex-direction:column;gap:.25rem;padding:.85rem 0 0;margin-top:.65rem;border-top:1px solid rgba(255,255,255,.08)}
+    .site-navbar.is-open .site-nav-mobile{display:flex}
+    .site-nav-mobile .nav-link{padding:.55rem .25rem;font-size:.9rem}
+    @media(min-width:768px){.site-nav-mobile{display:none!important}.site-nav-toggle{display:none}}
     .cta-glow{display:inline-block;text-decoration:none;padding:.65rem 1.2rem;border-radius:.75rem;font-weight:600;font-size:.875rem;border:1px solid color-mix(in srgb,var(--main-neon) 45%,transparent);background:color-mix(in srgb,var(--purple) 12%,transparent);box-shadow:0 0 calc(20px*var(--glow-intensity)) var(--main-neon);transition:box-shadow .25s}
     .badge,.stack-tag{font-size:.75rem;padding:.4rem .85rem;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65)}
 
@@ -248,9 +263,10 @@
       background:#000;border-radius:18px;z-index:5;pointer-events:none;
     }
     .device-iframe{
-      width:100%;height:100%;border:none;display:block;background:#000;
+      width:100%;height:100%;max-width:100%;border:none;display:block;background:#000;
       overflow:hidden;scrollbar-width:none;-ms-overflow-style:none;
     }
+    .showcase-block .iphone-wrap,.bank-mockup-wrap{width:100%;max-width:100%}
     .device-iframe::-webkit-scrollbar,.iphone-wrap::-webkit-scrollbar{display:none;width:0;height:0}
     .doyuz-ellipse-wrap{display:flex;justify-content:center;align-items:center;padding:.5rem 0}
     .doyuz-ellipse{
@@ -279,7 +295,7 @@
 
     /* BANK — MacBook browser mockup */
     .bank-intro{
-      width:90%;max-width:1100px;margin:0 auto;padding-bottom:32px;
+      width:100%;max-width:72rem;margin:0 auto;padding-bottom:32px;
     }
     .bank-header-row{
       display:flex;gap:clamp(1.25rem,3vw,2.5rem);align-items:flex-start;
@@ -294,7 +310,7 @@
       background:rgba(220,38,38,.08);color:#fca5a5;border:1px solid rgba(220,38,38,.35);
       box-shadow:0 0 12px rgba(220,38,38,.15);white-space:nowrap;
     }
-    .bank-mockup-wrap{width:90%;max-width:1100px;margin:0 auto}
+    .bank-mockup-wrap{width:100%;max-width:72rem;margin:0 auto}
     .aurora-shell{
       position:relative;height:calc(min(620px,72vh) + 45px);border-radius:14px;overflow:hidden;
       border:1px solid rgba(220,38,38,.22);
@@ -504,6 +520,7 @@
 
     /* Vertical faders — cross-browser */
     #control-center{padding:5rem 1rem 4rem}
+    @media(min-width:640px){#control-center{padding-left:1.5rem;padding-right:1.5rem}}
     .lab-header{max-width:720px;margin:0 auto 2.5rem;text-align:center}
     .lab-badge{
       display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
@@ -976,7 +993,7 @@
       padding:.4rem .85rem;border-radius:999px;margin-bottom:.75rem;
       color:var(--main-neon);border:1px solid rgba(255,215,0,.28);background:rgba(255,215,0,.06);
     }
-    .proof-title{font-size:1.5rem;font-weight:800;margin-bottom:.45rem}
+    .proof-title{font-size:clamp(1.35rem,4vw,1.5rem);font-weight:800;margin-bottom:.45rem}
     .proof-sub{font-size:.85rem;color:rgba(255,255,255,.42);max-width:32rem;margin:0 auto}
     .proof-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;max-width:72rem;margin:0 auto}
     .proof-card{
@@ -1072,26 +1089,56 @@
       .footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media(max-width:768px){
+      #siteNavbar{width:calc(100% - 1.25rem);padding:.65rem 1rem;top:.75rem}
+      #siteNavbar .site-navbar__cta{padding:.5rem .75rem;font-size:.72rem;white-space:nowrap}
+      #siteNavbar .site-navbar__logo{font-size:1rem}
+      #hero{padding-top:7.5rem}
+      .hero-sub{font-size:1rem;line-height:1.65}
+      .hero-trust{gap:.65rem}
+      .hero-trust-item{flex:1 1 calc(50% - .35rem);min-width:0;padding:.65rem .75rem}
+      .hero-trust-val{font-size:1rem}
+      .hero-quiz-btn{font-size:.82rem;line-height:1.45}
       .faq-widget{bottom:1rem;right:1rem}
-      .about-col{max-width:min(300px,88vw);padding-left:0;margin:0 auto}
-      .iphone16-body{width:min(340px,92vw);height:min(680px,68vh)}
-      .browser-viewport{height:min(440px,52vh)}
-      .aurora-shell{height:calc(min(440px,52vh) + 45px)}
-      .bank-intro,.bank-mockup-wrap{width:94%}
+      .about-col{max-width:min(300px,100%);padding-left:0;margin:0 auto}
+      .about-text h2{word-break:break-word}
+      .iphone-wrap{padding:.5rem 0}
+      .iphone16-body{width:100%;max-width:min(360px,100%);height:min(720px,78vh);border-radius:40px;padding:10px;margin:0 auto}
+      .dynamic-island{width:90px;height:26px;top:10px}
+      .browser-viewport{height:min(520px,68vh);min-height:380px}
+      .aurora-shell{height:calc(min(520px,68vh) + 45px);width:100%;max-width:100%}
+      .bank-intro,.bank-mockup-wrap{width:100%;max-width:100%}
       .bank-header-row{flex-direction:column;align-items:stretch}
       .broken-code-card{width:100%;max-width:260px;margin:0 auto}
       .mixer-lab-tools{position:static;justify-content:center;margin:0 auto 1rem;max-width:100%}
       .mixer-mute-btn{position:static}
-      .mixer-stage{flex-direction:column;align-items:center;gap:1.75rem}
+      .mixer-stage{flex-direction:column;align-items:center;gap:1.75rem;max-width:100%}
       .fader-bank{order:2;width:100%;justify-content:center;flex-wrap:wrap}
       .lucky-slot{order:1;flex-direction:column;align-items:center;width:100%}
       .slot-lever-side{flex-direction:row;width:auto;padding:1rem 0 0;justify-content:center;gap:.5rem}
       .lever-shaft{height:72px;transform-origin:bottom center}
       .slot-lever-side.pulled .lever-shaft{transform:rotate(-32deg)}
       .calc-grid{grid-template-columns:1fr!important}
-      .calc-shell{padding:1.5rem 1.25rem}
-      .showcase-block{padding:1.25rem .85rem}
+      .calc-shell{padding:1.5rem 1rem}
+      .showcase-block{padding:1.25rem .5rem}
       .footer-grid{grid-template-columns:1fr}
+      .ide-wrap{max-width:100%;overflow:hidden}
+      .ide-window{border-radius:12px}
+      .proof-grid{max-width:100%}
+      .doyuz-ellipse{padding:clamp(20px,4vw,32px)}
+      .doyuz-arch-badge{white-space:normal;text-align:center;line-height:1.35}
+    }
+    @media(max-width:430px){
+      #siteNavbar{width:calc(100% - .75rem);padding:.55rem .75rem}
+      #siteNavbar .site-navbar__cta{padding:.45rem .6rem;font-size:.66rem}
+      .iphone16-body{max-width:100%;height:min(680px,82vh);border-radius:32px}
+      .browser-viewport{height:min(460px,72vh);min-height:340px}
+      .aurora-shell{height:calc(min(460px,72vh) + 42px)}
+      .browser-bar{padding:10px 12px;gap:6px}
+      .browser-url{font-size:9px;padding:6px 8px}
+      .browser-open-btn{font-size:10px;padding:6px 8px}
+      .hero-trust-item{flex:1 1 100%}
+      .calc-project-grid{grid-template-columns:1fr}
+      .lab-desc{font-size:.88rem;line-height:1.55}
     }
     @media(max-width:520px){
       .calc-project-grid{grid-template-columns:1fr}
@@ -1105,7 +1152,7 @@
 
   <nav id="siteNavbar" class="site-navbar" aria-label="Главная навигация">
     <div class="site-navbar__inner">
-      <a href="#" class="text-lg font-bold shrink-0" style="color:var(--main-neon)">Weldor.space</a>
+      <a href="#" class="site-navbar__logo text-lg font-bold shrink-0" style="color:var(--main-neon)">Weldor.space</a>
       <div class="hidden md:flex gap-7">
         <a href="#about" class="nav-link">Обо мне</a>
         <a href="#showcase" class="nav-link">Проекты</a>
@@ -1114,17 +1161,32 @@
         <a href="#calculator" class="nav-link">ROI</a>
         <a href="./configurator.html" class="nav-link">Конфигуратор</a>
       </div>
-      <a href="https://t.me/Iamveldor" target="_blank" rel="noopener" class="cta-glow shrink-0">Обсудить ➔</a>
+      <div class="site-navbar__actions">
+        <a href="https://t.me/Iamveldor" target="_blank" rel="noopener" class="cta-glow shrink-0 site-navbar__cta">Обсудить ➔</a>
+        <button type="button" class="site-nav-toggle md:hidden" id="siteNavToggle" aria-expanded="false" aria-controls="siteNavMobile" aria-label="Открыть меню">
+          <span class="site-nav-toggle__bar"></span>
+          <span class="site-nav-toggle__bar"></span>
+          <span class="site-nav-toggle__bar"></span>
+        </button>
+      </div>
+    </div>
+    <div class="site-nav-mobile md:hidden" id="siteNavMobile">
+      <a href="#about" class="nav-link">Обо мне</a>
+      <a href="#showcase" class="nav-link">Проекты</a>
+      <a href="#control-center" class="nav-link">Микшер</a>
+      <a href="#code-inspector" class="nav-link">Код</a>
+      <a href="#calculator" class="nav-link">ROI</a>
+      <a href="./configurator.html" class="nav-link">Конфигуратор</a>
     </div>
   </nav>
 
   <div class="content-layer">
     <main>
-      <section id="hero" class="min-h-screen flex items-center pt-36 pb-16 px-4">
-        <div id="contentRail" class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
+      <section id="hero" class="min-h-screen flex items-center pt-28 sm:pt-36 pb-16 px-4 sm:px-6">
+        <div id="contentRail" class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div class="section-reveal hero-copy space-y-6">
             <span class="badge">Привет, я Weldor 👋</span>
-            <h1 class="text-4xl lg:text-5xl font-bold leading-tight">Разработка высоконагруженных сайтов, E-Commerce и веб-сервисов на чистом коде.</h1>
+            <h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight">Разработка высоконагруженных сайтов, E-Commerce и веб-сервисов на чистом коде.</h1>
             <p class="text-lg hero-sub">Делаю цифровые продукты с нуля — без Tilda и без «склеенных» шаблонов. Живой код, Kaspi, Telegram, музыка и экосистемы под ключ.</p>
             <div class="hero-cta-row">
               <a href="https://t.me/Iamveldor" target="_blank" rel="noopener" class="cta-glow">Написать мне в Telegram ➔</a>
@@ -1194,7 +1256,7 @@
         </div>
       </div>
 
-      <section id="about" class="about-section py-24 px-4">
+      <section id="about" class="about-section py-24 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto about-grid">
           <div class="section-reveal about-col">
             <div class="about-frame">
@@ -1208,7 +1270,7 @@
           </div>
           <div class="section-reveal about-text space-y-1">
             <p class="text-xs tracking-[.25em] uppercase" style="color:var(--main-neon)">Обо мне</p>
-            <h2 class="text-3xl font-bold mb-4">Саржан. Weldor. Человек, который собирает экосистемы руками.</h2>
+            <h2 class="text-2xl sm:text-4xl font-bold mb-4">Саржан. Weldor. Человек, который собирает экосистемы руками.</h2>
             <p>Меня зовут <strong>Саржан Руслан</strong> — в сети чаще <strong>Mellis Weldor / Weldor</strong>. Я fullstack-разработчик и контент-мейкер из Актобе. Если коротко: я обожаю, когда сайт или приложение ощущается как живой продукт, а не как очередная страница из конструктора.</p>
             <p>Я <strong>1,5 года учился в CAP EDUCATION</strong> — там заложилась база: алгоритмы, архитектура, привычка к чистому коду. Потом был <strong>республиканский хакатон в Астане (9 место по Казахстану, 14–15 февраля)</strong> — там понял, что могу собирать рабочие системы под давлением и дедлайном, а не только «для портфолио».</p>
             <p>Мой подход простой: <strong>никаких громоздких конструкторов</strong>. Пишу вручную — React, Node, TypeScript — чтобы загрузка была быстрой, а код можно было масштабировать, а не переписывать через полгода. Люблю, когда под капотом порядок: JWT, сессии, Web Crypto, нормальная структура папок — без магии и костылей.</p>
@@ -1300,21 +1362,21 @@
         </div>
       </section>
 
-      <section id="showcase" class="py-16 px-4">
-        <div class="max-w-7xl mx-auto">
+      <section id="showcase" class="py-16 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto w-full">
           <div class="section-reveal mb-8">
-            <h2 class="text-3xl font-bold">Мои живые проекты</h2>
+            <h2 class="text-2xl sm:text-4xl font-bold">Мои живые проекты</h2>
             <p class="text-white/40 text-sm mt-2">Ниже — настоящий код в iframe, не макеты</p>
           </div>
 
           <!-- DOYUZ -->
           <div id="doyuz" class="showcase-block section-reveal">
-            <div class="doyuz-showcase grid lg:grid-cols-2 gap-10 items-center">
-              <div class="iphone-wrap">
-                <div class="iphone16-body">
+            <div class="doyuz-showcase grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+              <div class="iphone-wrap w-full">
+                <div class="iphone16-body w-full">
                   <div class="iphone16-screen">
                     <div class="dynamic-island"></div>
-                    <iframe class="device-iframe" src="./doyuz/index.html?portfolio=1" title="DOYUZ" loading="lazy" scrolling="no"></iframe>
+                    <iframe class="device-iframe w-full" src="/doyuz/index.html?portfolio=1" title="DOYUZ" loading="lazy"></iframe>
                   </div>
                 </div>
               </div>
@@ -1322,7 +1384,7 @@
                 <div class="doyuz-ellipse">
                   <h3>DOYUZ — моя музыкальная вселенная</h3>
                   <p>Честно? DOYUZ — это проект от сердца. Я давно был в музыке, и когда дошло до разработки, захотелось не просто «сайт с треками», а <strong>экосистему</strong>: плеер, lента, вкладки, аудиопотоки, фича «Креативное ДНК».</p>
-                  <p>Слева — реальный DOYUZ в iPhone. Скролль, жми резонансы, оставь коммент — это <strong>./doyuz/index.html</strong>, handwritten React + Audio API.</p>
+                  <p>Слева — реальный DOYUZ в iPhone. Скролль, жми резонансы, оставь коммент — это <strong>/doyuz/index.html</strong>, handwritten React + Audio API.</p>
                   <div class="doyuz-tags">
                     <span class="doyuz-tag-dark">React</span>
                     <span class="doyuz-tag-dark">Audio API</span>
@@ -1343,9 +1405,9 @@
             <div class="bank-intro">
               <div class="bank-header-row">
                 <div class="bank-header-copy">
-                  <h3 class="text-2xl font-bold">ТУПРОЛЕЖКА БАНК — финтех с характером</h3>
+                  <h3 class="text-xl sm:text-2xl font-bold">ТУПРОЛЕЖКА БАНК — финтех с характером</h3>
                   <p class="project-story mt-3">Этот проект — моя любовь к UI/UX и абсурдному, но узнаваемому брендингу. <strong>Карта Broken Code</strong>, кэшбэк в огурцах, «бархатный risk» — да, это ирония, но под капотом нормальный финтех: роутинг, криптография, структура личного кабинета.</p>
-                  <p class="project-story">Монитор ниже — live iframe в стиле MacBook-браузера. Нажми 🔴 Close — откроется рабочий стол <strong>Aurora OS</strong>. Внутри — настоящий <strong>./Тупролежка/index.html</strong>.</p>
+                  <p class="project-story">Монитор ниже — live iframe в стиле MacBook-браузера. Нажми 🔴 Close — откроется рабочий стол <strong>Aurora OS</strong>. Внутри — настоящий <strong>/tuprolezhka/index.html</strong>.</p>
                 </div>
                 <div class="broken-code-card" id="brokenCodeCard" aria-label="Карта Broken Code — интерактивная 3D-карточка">
                   <div class="broken-code-card__inner">
@@ -1408,7 +1470,7 @@
                     <a class="browser-open-btn" href="https://super-llama-13d6a2.netlify.app/" target="_blank" rel="noopener noreferrer">↗ Открыть на весь экран</a>
                   </div>
                   <div class="browser-viewport">
-                    <iframe class="device-iframe bank-iframe" src="./Тупролежка/index.html" title="Тупролежка Банк" loading="lazy"></iframe>
+                    <iframe class="device-iframe bank-iframe w-full" src="/tuprolezhka/index.html" title="Тупролежка Банк" loading="lazy"></iframe>
                   </div>
                 </div>
               </div>
@@ -1419,7 +1481,7 @@
 
       <!-- MIXER + SLOT -->
       <section id="control-center">
-        <div class="max-w-7xl mx-auto px-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 w-full">
           <div class="lab-header section-reveal">
             <span class="lab-badge">🎛️ ЛАБОРАТОРИЯ СТИЛЯ // CLEAN CODE DEMO</span>
             <h2 class="lab-title">ПОКРУТИТЕ СТИЛЬ ПОД СЕБЯ</h2>
@@ -1501,9 +1563,9 @@
         </div>
       </section>
 
-      <section id="code-inspector" class="py-20 px-4">
-        <div class="max-w-7xl mx-auto">
-          <div class="section-reveal text-center mb-8"><h2 class="text-2xl font-bold">Чистый код под капотом</h2></div>
+      <section id="code-inspector" class="py-20 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto w-full">
+          <div class="section-reveal text-center mb-8"><h2 class="text-2xl sm:text-4xl font-bold">Чистый код под капотом</h2></div>
           <div class="section-reveal ide-wrap">
             <div class="ide-mode-toggle">
               <button type="button" class="ide-mode-btn on" data-ide-mode="ts">⚡ Чистый TypeScript</button>
@@ -1556,7 +1618,7 @@
         </div>
       </section>
 
-      <section id="social-proof" class="proof-section px-4">
+      <section id="social-proof" class="proof-section px-4 sm:px-6">
         <div class="max-w-7xl mx-auto section-reveal">
           <div class="proof-header">
             <span class="proof-badge">💬 Social Proof</span>
@@ -1619,9 +1681,9 @@
         </div>
       </section>
 
-      <section id="calculator" class="py-16 px-4 mb-8">
-        <div class="max-w-7xl mx-auto section-reveal glass rounded-2xl calc-shell">
-          <h2 class="text-2xl font-bold calc-section-title">Калькулятор — сколько стоит твоя идея</h2>
+      <section id="calculator" class="py-16 px-4 sm:px-6 mb-8">
+        <div class="max-w-7xl mx-auto w-full section-reveal glass rounded-2xl calc-shell">
+          <h2 class="text-2xl sm:text-4xl font-bold calc-section-title">Калькулятор — сколько стоит твоя идея</h2>
           <div class="calc-compare-badge">
             <span>Обычные студии: <span class="bad">~40 дней ❌</span></span>
             <span>|</span>
@@ -1660,7 +1722,7 @@
               <span class="calc-project-card__meta">7–12 дней · от 480 000 ₸</span>
             </button>
           </div>
-          <div class="grid lg:grid-cols-2 gap-8 calc-grid">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 calc-grid">
             <div class="space-y-4">
               <p class="text-sm text-white/50 font-semibold">Интеграции и фичи</p>
               <div class="calc-options" id="calcOptions">
@@ -1690,7 +1752,7 @@
     </main>
 
     <footer id="siteFooter">
-      <div class="footer-grid px-4">
+      <div class="footer-grid px-4 sm:px-6">
         <div class="footer-col">
           <p class="footer-brand-name">Weldor.space</p>
           <p class="footer-brand-desc">Разработка веб-систем, Web App и интерфейсов.</p>
@@ -3053,6 +3115,42 @@
     tickClock();
     setInterval(tickClock, 1000);
     syncAuroraState();
+  })();
+
+  /* Mobile navigation */
+  (function(){
+    var nav = document.getElementById('siteNavbar');
+    var toggle = document.getElementById('siteNavToggle');
+    var panel = document.getElementById('siteNavMobile');
+    if(!nav || !toggle || !panel) return;
+
+    function setOpen(open){
+      nav.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+    }
+
+    toggle.addEventListener('click', function(){
+      setOpen(!nav.classList.contains('is-open'));
+    });
+
+    panel.querySelectorAll('a[href^="#"]').forEach(function(link){
+      link.addEventListener('click', function(){ setOpen(false); });
+    });
+
+    document.addEventListener('click', function(e){
+      if(!nav.classList.contains('is-open')) return;
+      if(nav.contains(e.target)) return;
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') setOpen(false);
+    });
+
+    window.addEventListener('resize', function(){
+      if(window.innerWidth >= 768) setOpen(false);
+    });
   })();
 
   /* Hide scrollbars inside project iframes (same-origin) */
